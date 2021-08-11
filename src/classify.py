@@ -56,6 +56,7 @@ def classifyTemplates(radius, imgs, templates):
 
 
 def generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultindices, radius, maxNumberInClass, minNumberInClass):
+
     newTemplates = []
     ncount=[]
     templateIDs=[]
@@ -98,3 +99,49 @@ def generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultin
         i+=1
             
     return newTemplates
+
+
+def backplotImg(radius, imgs, templates):
+    maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, imgs, templates)
+
+    overlay=[]
+    overlayCount=[]
+    
+    pltminradius=3
+
+    for i in range(len(imgs)):
+        img = imgs[i]
+        overlay.append(np.zeros(img.shape))
+        overlayCount.append(np.zeros(img.shape))
+
+    # generating a smooth transistion (gaussian) map:
+    backplotwindow=np.zeros((2*radius,2*radius))
+    x = np.linspace(0, 1, backplotwindow.shape[0])
+    y = np.linspace(0, 1,  backplotwindow.shape[1])
+    xv, yv = np.meshgrid(x, y, sparse=True)
+    backplotwindow=np.exp(-((4*np.maximum(0,(xv-0.5))**2-0.1)+(4*np.maximum(0,(yv-0.5))**2-0.1)))
+    
+    # the back plotting
+    n=0
+    for i in range(len(sortedIndices)):
+        idxd = sortedIndices[i]
+        for j in range(idxd.shape[1]):
+            # try:
+                #print(j)
+            templateIdx = int(maxresultindices[i][idxd[0][j],idxd[1][j]]) 
+            overlay[i][idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)]+=templates[templateIdx]*backplotwindow
+            overlayCount[i][idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)]+=backplotwindow
+            n+=1    
+            # except:
+            #     pass
+    print("Used "+str(n)+"subimages")
+
+    imgBackplots = []
+    mymin=[]
+    mymax=[]
+    for i in range(len(imgs)):
+        imgBackplots.append(overlay[i]/ ( overlayCount[i] + (np.double(overlayCount[i]==0))  ) ) 
+        # mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
+        # mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
+
+    return imgBackplots, mymin, mymax

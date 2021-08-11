@@ -74,6 +74,8 @@ while rerun>0:
 
 print(len(templates))
 
+
+
 # n1_max=len(list(FileDic.keys()))
 # n1=-1
 # n2_max=max([len(list(newtemplate[Mode].keys())) for Mode in FileDic.keys()])
@@ -90,3 +92,25 @@ print(len(templates))
 #             plt.axis('off')
 #         except:
 #             pass
+
+
+backplot, min, max = classify.backplotImg(radius, imgs, templates)
+
+
+
+for i in range(len(backplot)):
+    max = np.max(backplot[i])
+    min = np.min(backplot[i])
+    plt.figure(figsize=(15, 7)) 
+    ax1=plt.subplot(1,2,1)                    
+    ax1.imshow(backplot[i],cmap=plt.cm.gray,vmin=min,vmax=max)
+    ax1.set_title('backplot')
+    ax1.axis('off')
+    ax2=plt.subplot(1,2,2)                    
+    ax2.imshow(imgs[i],cmap=plt.cm.gray,vmin=min,vmax=max)
+    ax2.set_title('original image')
+    ax2.axis('off')
+    # plt.figure(figsize=(15, 12))  
+    # plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
+    # plt.colorbar()
+    plt.show()
