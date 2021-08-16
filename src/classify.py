@@ -104,6 +104,8 @@ def generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultin
 def backplotImg(radius, imgs, templates):
     maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, imgs, templates)
 
+    
+
     overlay=[]
     overlayCount=[]
     
@@ -144,4 +146,10 @@ def backplotImg(radius, imgs, templates):
         # mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
         # mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
 
-    return imgBackplots, mymin, mymax
+    templateMatchingResults = {
+        "maxresultindices": maxresultindices,
+        "maxresults": maxresults,
+        "sortedIndices": sortedIndices
+    }
+
+    return imgBackplots, mymin, mymax, templateMatchingResults
