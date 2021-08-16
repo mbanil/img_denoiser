@@ -1,5 +1,6 @@
 import numpy as np
 from skimage.feature import match_template
+from copy import deepcopy
 
 def tempfuncname(radius, imgs, templates, maxNumberInClass, minNumberInClass):
 
@@ -98,7 +99,7 @@ def generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultin
             newTemplates[i]/=ncount[i]
         i+=1
             
-    return newTemplates
+    return deepcopy(newTemplates)
 
 
 def backplotImg(radius, imgs, templates):
@@ -147,9 +148,9 @@ def backplotImg(radius, imgs, templates):
         # mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
 
     templateMatchingResults = {
-        "maxresultindices": maxresultindices,
-        "maxresults": maxresults,
-        "sortedIndices": sortedIndices
+        "maxresultindices": deepcopy(maxresultindices),
+        "maxresults": deepcopy(maxresults),
+        "sortedIndices": deepcopy(sortedIndices)
     }
 
     return imgBackplots, mymin, mymax, templateMatchingResults

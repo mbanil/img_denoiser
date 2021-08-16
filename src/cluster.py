@@ -19,12 +19,12 @@ def sortTemplates(imgs, templateMatchingResults, radius, templates):
                 "xIndex": idxd[0][j],
                 "yIndex": idxd[1][j],
                 "template": img[idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)],
-                "index": i
+                "imgIndex": i
             }
             if(picDic[jt]==None):
                 picDic[jt] = [temp]
             else:
-                picDic[jt].append(temp)
+                picDic[jt].append(deepcopy(temp))
             picdicindex+=1
         
     print("Used "+str(picdicindex)+"subimages")    
@@ -66,12 +66,19 @@ def cluster(radius, templates, picDic):
 
         clusters_=fcluster(linked,  numberofClusters, criterion='maxclust')
 
-        centroid=[np.zeros(templateShape)]*numberofClusters
+        centroid=[None]*numberofClusters
         centroidCounter=[0]*numberofClusters
+        clusterList = [None]*numberofClusters
 
         for j in range(len(clusters_)):
-            centroid[clusters_[j]-1] += picDic[jt][j]["template"]
+            
             centroidCounter[clusters_[j]-1]+=1
+            if(clusterList[clusters_[j]-1]==None):
+                centroid[clusters_[j]-1] = picDic[jt][j]["template"]
+                clusterList[clusters_[j]-1]=[j]
+            else:
+                centroid[clusters_[j]-1] += picDic[jt][j]["template"]
+                clusterList[clusters_[j]-1].append(j)
 
         
         for jc in range(numberofClusters):
@@ -81,31 +88,68 @@ def cluster(radius, templates, picDic):
         subCentroid = []
         for jc in range(numberofClusters):
             subCentroid.append({
-                "centroid": centroid[jc],
-                "count": centroidCounter[jc]
+                "centroid": deepcopy(centroid[jc]),
+                "id": deepcopy(clusterList[jc])
             })
         
         
-        centroidDic.append(subCentroid)
+        centroidDic.append(deepcopy(subCentroid))
             
 
     return centroidDic
 
 
+def backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults):
+
+    # generating a smooth transistion map:
+    backplotwindow=np.zeros((2*radius,2*radius))
+    x = np.linspace(0, 1, backplotwindow.shape[0])
+    y = np.linspace(0, 1,  backplotwindow.shape[1])
+    xv, yv = np.meshgrid(x, y, sparse=True)
+    backplotwindow=np.exp(-((4*np.maximum(0,(xv-0.5))**2-0.1)+(4*np.maximum(0,(yv-0.5))**2-0.1)))   
+
+
+    n=0
+    pltminradius=3
+
+    
+    overlay=[]
+    overlayCount=[]
+    overlayclass=[]
+
+    for i in range(len(imgs)):
+        img = imgs[i]
+        overlay.append(np.zeros(img.shape))
+        overlayCount.append(np.zeros(img.shape))
+        overlayclass.append(np.zeros(img.shape))
+    
+    for jt in range(len(centroidDic)):
+        for jc in range(len(centroidDic[jt])):    
+            for j in centroidDic[jt][jc]["id"]: 
+                myindex=picDic[jt][jc]["imgIndex"]  
+                maxresultindex=templateMatchingResults["maxresultindices"][myindex]          
+                x=picDic[jt][j]["xIndex"]  
+                y=picDic[jt][j]["yIndex"]  
+                overlay[myindex][x:(x+2*radius),(y):(y+2*radius)]+=centroidDic[jt][jc]["centroid"]*backplotwindow
+                overlayCount[myindex][x:(x+2*radius),(y):(y+2*radius)]+=backplotwindow
+                overlayclass[myindex][(x-pltminradius):(x+pltminradius),
+                            (y-pltminradius):(y+pltminradius)]=maxresultindex[x,y]
+                n+=1    
+                #except:
+                #    pass
+    print("Used "+str(n)+"subimages")
+
+    imgBackplots = []
+    mymin=[]
+    mymax=[]
+    for i in range(len(imgs)):
+        imgBackplots.append(overlay[i]/ ( overlayCount[i] + (np.double(overlayCount[i]==0))  ) ) 
+        mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
+        mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
+
+    return imgBackplots, mymin, mymax
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    

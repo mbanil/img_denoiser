@@ -70,3 +70,4 @@ def findDissimilarTemplates(templates, imgs, radius, minTemplateClasses):
     
     return templates
 
+# create backplot window

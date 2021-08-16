@@ -100,25 +100,42 @@ backplot, min, max, templateMatchingResults = classify.backplotImg(radius, imgs,
 
 
 
-# for i in range(len(backplot)):
-#     max = np.max(backplot[i])
-#     min = np.min(backplot[i])
-#     plt.figure(figsize=(15, 7)) 
-#     ax1=plt.subplot(1,2,1)                    
-#     ax1.imshow(backplot[i],cmap=plt.cm.gray,vmin=min,vmax=max)
-#     ax1.set_title('backplot')
-#     ax1.axis('off')
-#     ax2=plt.subplot(1,2,2)                    
-#     ax2.imshow(imgs[i],cmap=plt.cm.gray,vmin=min,vmax=max)
-#     ax2.set_title('original image')
-#     ax2.axis('off')
-#     # plt.figure(figsize=(15, 12))  
-#     # plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
-#     # plt.colorbar()
-#     plt.show()
+for i in range(len(backplot)):
+    max = np.max(backplot[i])
+    min = np.min(backplot[i])
+    plt.figure(figsize=(15, 7)) 
+    ax1=plt.subplot(1,2,1)                    
+    ax1.imshow(backplot[i],cmap=plt.cm.gray,vmin=min,vmax=max)
+    ax1.set_title('backplot')
+    ax1.axis('off')
+    ax2=plt.subplot(1,2,2)                    
+    ax2.imshow(imgs[i],cmap=plt.cm.gray,vmin=min,vmax=max)
+    ax2.set_title('original image')
+    ax2.axis('off')
+    # plt.figure(figsize=(15, 12))  
+    # plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
+    # plt.colorbar()
+    plt.show()
 
 picDic = cluster.sortTemplates(imgs, templateMatchingResults, radius, templates)
 
 centroidDic = cluster.cluster(radius, templates, picDic)
+
+backplotFinal, min, max = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)
+
+for i in range(len(imgs)):
+    plt.figure(figsize=(2*15, 2*7)) 
+    ax1=plt.subplot(1,2,1)                    
+    ax1.imshow(backplotFinal[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+    ax1.set_title('backplot')
+    ax1.axis('off')
+    ax2=plt.subplot(1,2,2)                    
+    ax2.imshow(imgs[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+    ax2.set_title('original image')
+    ax2.axis('off')
+    #plt.figure(figsize=(15, 12))  
+    #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
+    #plt.colorbar()
+    plt.show()
 
 print(len(picDic))
