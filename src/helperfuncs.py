@@ -1,3 +1,4 @@
+from copy import deepcopy
 from skimage import io
 import hyperspy.api as hs
 import numpy as np
@@ -22,14 +23,13 @@ def loadData(folderPath, fileName):
 
     return imgs
 
-
 def generateTemplates(startPosList, imgs, radius):
     templates=[]
 
     # templates are only taken from the first image of the imges list (since the images are similar)
     for startPos in startPosList:
-        templates.append(imgs[0][startPos[0]:startPos[0]+np.int(2*radius),
-                                         startPos[1]:startPos[1]+np.int(2*radius)])
+        templates.append(deepcopy(imgs[0][startPos[0]:startPos[0]+np.int(2*radius),
+                                         startPos[1]:startPos[1]+np.int(2*radius)]))
 
     return templates
     
@@ -59,8 +59,8 @@ def findDissimilarTemplates(templates, imgs, radius, minTemplateClasses):
             idx = (minresults[i].flatten()).argsort()
             idxd=np.unravel_index(idx,resultshape)
 
-            templates.append(img[idxd[0][best]:idxd[0][best]+np.int(2*radius),
-                                                idxd[1][best]:idxd[1][best]+np.int(2*radius)])
+            templates.append(deepcopy(img[idxd[0][best]:idxd[0][best]+np.int(2*radius),
+                                            idxd[1][best]:idxd[1][best]+np.int(2*radius)]))
             
             if len(templates) >= minTemplateClasses:
                 break

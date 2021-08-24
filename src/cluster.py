@@ -18,7 +18,7 @@ def sortTemplates(imgs, templateMatchingResults, radius, templates):
             temp = {
                 "xIndex": idxd[0][j],
                 "yIndex": idxd[1][j],
-                "template": img[idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)],
+                "template": deepcopy(img[idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)]),
                 "imgIndex": i
             }
             if(picDic[jt]==None):
