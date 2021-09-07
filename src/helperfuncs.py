@@ -15,9 +15,17 @@ def loadData(folderPath, fileName):
                 imgs.append(b[j,:,:])
         else:   
             imgs.append(io.imread(folderPath + fileName))
-    elif fileName.lower().endswith(('.dm3')):
+    elif fileName.lower().endswith(('.dm3','.emd')):
         dm3Data=hs.load(folderPath + fileName)
-        imgs.append(np.float64(dm3Data.data))
+        if fileName.lower().endswith(('.emd')):
+            data = []
+            for channel in dm3Data:
+                data.append(np.float64(channel.data))
+                break
+            data = np.stack(data, axis=2)
+            imgs.append(data[:,:,0])
+        else:
+            imgs.append(np.float64(dm3Data.data))
     else:
         print('ERROR: filetyp not supported! Please contact me.')
 

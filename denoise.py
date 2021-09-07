@@ -11,8 +11,8 @@ from src import cluster
 
 
 
-folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/' # Maxime/' #sample 2/'
-imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
+folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' # Maxime/' #sample 2/'
+imgName = '18_04_27_Thomas_28618_0016.dm3'
 
 
 def denoise(folderPath, imgName, rerun = 15, radius=23):
@@ -94,12 +94,26 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
         #plt.figure(figsize=(15, 12))  
         #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
         #plt.colorbar()
-        # plt.show()
+        plt.show()
 
     plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/'+imgName+'-denoised.png')    
 
     end = time()
     print(f'Total time: {end - start} seconds!')
+
+    plt.figure(figsize=(20,20))
+
+    img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(imgs[0][radius:-radius,radius:-radius]))))
+    ax1=plt.subplot(1,2,1)
+    ax1.imshow(img,cmap='gray')
+    ax1.axis('off')
+    ax1.set_title('FFT of original image')
+    img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(backplotFinal[0][radius:-radius,radius:-radius]))))
+    ax1=plt.subplot(1,2,2)
+    ax1.imshow(img,cmap='gray')
+    ax1.axis('off')
+    ax1.set_title('FFT of denoised image in')
+    plt.show()
 
     return backplotFinal
 

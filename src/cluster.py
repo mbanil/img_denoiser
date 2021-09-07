@@ -55,7 +55,7 @@ def cluster(radius, templates, picDic):
 
         temp=np.zeros((templateCount,templateShape_reshaped))
         for j in range(templateCount):
-            temp[n,:]=(picDic[jt][j]["template"]*backplotwindow).flatten()
+            temp[n,:]=deepcopy((picDic[jt][j]["template"]*backplotwindow).flatten())
             n+=1
         linked = linkage(temp,method='ward')
 
@@ -74,10 +74,10 @@ def cluster(radius, templates, picDic):
             
             centroidCounter[clusters_[j]-1]+=1
             if(clusterList[clusters_[j]-1]==None):
-                centroid[clusters_[j]-1] = picDic[jt][j]["template"]
+                centroid[clusters_[j]-1] = deepcopy(picDic[jt][j]["template"])
                 clusterList[clusters_[j]-1]=[j]
             else:
-                centroid[clusters_[j]-1] += picDic[jt][j]["template"]
+                centroid[clusters_[j]-1] += deepcopy(picDic[jt][j]["template"])
                 clusterList[clusters_[j]-1].append(j)
 
         
@@ -146,7 +146,7 @@ def backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults):
         imgBackplots.append(overlay[i]/ ( overlayCount[i] + (np.double(overlayCount[i]==0))  ) ) 
         mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
         mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
-
+        
     return imgBackplots, mymin, mymax
 
 

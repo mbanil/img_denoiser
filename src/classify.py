@@ -8,7 +8,7 @@ def tempfuncname(radius, imgs, templates, maxNumberInClass, minNumberInClass):
 
     newTemplates = generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultindices, radius, maxNumberInClass, minNumberInClass)
             
-    return newTemplates
+    return deepcopy(newTemplates)
 
 
 
@@ -49,9 +49,9 @@ def classifyTemplates(radius, imgs, templates):
             idxdnew[:,n]=[idxd[0][myk],idxd[1][myk]]
             n+=1
 
-        sortedIndices.append(idxdnew)
-        maxresultindices.append(maxresultindex)
-        maxresults.append(maxresult)
+        sortedIndices.append(deepcopy(idxdnew))
+        maxresultindices.append(deepcopy(maxresultindex))
+        maxresults.append(deepcopy(maxresult))
     
     return maxresultindices, maxresults, sortedIndices
 
@@ -77,7 +77,7 @@ def generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultin
         for j in range(len(idxd[0])):
             # try:
             jt=np.int32(maxresultindex[idxd[0][j],idxd[1][j]])                
-            newTemplates[templateIDs[jt]]+=img[idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)]
+            newTemplates[templateIDs[jt]]+=deepcopy(img[idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)])
             ncount[templateIDs[jt]]+=1
             if ncount[templateIDs[jt]]>=maxNumberInClass:
                 # print(len(newTemplates))
@@ -132,7 +132,7 @@ def backplotImg(radius, imgs, templates):
             # try:
                 #print(j)
             templateIdx = int(maxresultindices[i][idxd[0][j],idxd[1][j]]) 
-            overlay[i][idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)]+=templates[templateIdx]*backplotwindow
+            overlay[i][idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)]+= deepcopy(templates[templateIdx]*backplotwindow)
             overlayCount[i][idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)]+=backplotwindow
             n+=1    
             # except:
@@ -144,8 +144,8 @@ def backplotImg(radius, imgs, templates):
     mymax=[]
     for i in range(len(imgs)):
         imgBackplots.append(overlay[i]/ ( overlayCount[i] + (np.double(overlayCount[i]==0))  ) ) 
-        # mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
-        # mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
+        mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
+        mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
 
     templateMatchingResults = {
         "maxresultindices": deepcopy(maxresultindices),
