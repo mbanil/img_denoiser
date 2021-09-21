@@ -1,6 +1,7 @@
 import numpy as np
 from skimage.feature import match_template
 from copy import deepcopy
+import multiprocessing as mp
 
 def tempfuncname(radius, imgs, templates, maxNumberInClass, minNumberInClass):
 
@@ -22,20 +23,31 @@ def classifyTemplates(radius, imgs, templates):
     for img in imgs:
         firstrun=True
 
-        for t in range(len(templates)): 
-            result=match_template(img, templates[t])
-            resultshape=result.shape
-            # changes here required if using multimode
-            if firstrun:
-                firstrun=False
-                maxresultindex=np.zeros(resultshape)
-                maxresult=np.zeros(resultshape)    
-            maxresultindex[result>maxresult]=t
-            maxresult[result>maxresult]=result[result>maxresult]
+        pool = mp.Pool(mp.cpu_count())
+
+        results = pool.starmap_async(match_template, [(img, template) for template in templates]).get()
+
+        pool.close()
+
+        results = np.array(results)
+        maxresult = np.amax(results, axis=0)
+        maxresultindex = np.argmax(results, axis=0)
+
+
+        # for t in range(len(templates)): 
+        #     result=match_template(img, templates[t])
+        #     resultshape=result.shape
+        #     # changes here required if using multimode
+        #     if firstrun:
+        #         firstrun=False
+        #         maxresultindex=np.zeros(resultshape)
+        #         maxresult=np.zeros(resultshape)    
+        #     maxresultindex[result>maxresult]=t
+        #     maxresult[result>maxresult]=result[result>maxresult]
     
         # Now we rearange these results:
         idx = (-maxresult.flatten()).argsort()
-        idxd=np.unravel_index(idx,result.shape)
+        idxd=np.unravel_index(idx,results[0].shape)
         goodlist=[]
         for myk in range(len(idx)):
             if  (maxresult[idxd[0][myk],idxd[1][myk]]>0):

@@ -6,16 +6,21 @@ import io
 import pstats
 
 from src import helperfuncs
+# from src_parallel import classify
 from src import classify
 from src import cluster
 
+from multiprocessing import freeze_support
+
+def main():
+
+    folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-4/NMC111_delith_15000000X_ABF_stack2/' # Maxime/' #sample 2/'
+    imgName = 'NMC111_delith_15000000X_ABF_stack2.dm3'
+    rerun = 15
+    radius = 23
 
 
-folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' # Maxime/' #sample 2/'
-imgName = '18_04_27_Thomas_28618_0016.dm3'
-
-
-def denoise(folderPath, imgName, rerun = 15, radius=23):
+# def denoise(folderPath, imgName, rerun = 15, radius=23):
 
     start = time()
 
@@ -53,6 +58,8 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
     gen_end = time()
     print(f'Time for generating basic templates: {gen_end - gen_start} seconds!')
 
+    freeze_support()
+
     rerun_ = rerun
     classsify_start = time()
     while rerun>0:
@@ -81,51 +88,56 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
     backplot_end = time()
     print(f'Time for backplotting-2 : {backplot_end - backplot_start} seconds!')
 
-    for i in range(len(imgs)):
-        plt.figure(figsize=(2*15, 2*7)) 
-        ax1=plt.subplot(1,2,1)                    
-        ax1.imshow(backplotFinal[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
-        ax1.set_title('backplot')
-        ax1.axis('off')
-        ax2=plt.subplot(1,2,2)                    
-        ax2.imshow(imgs[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
-        ax2.set_title('original image')
-        ax2.axis('off')
-        #plt.figure(figsize=(15, 12))  
-        #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
-        #plt.colorbar()
-        plt.show()
+    # for i in range(len(imgs)):
+    #     plt.figure(figsize=(2*15, 2*7)) 
+    #     ax1=plt.subplot(1,2,1)                    
+    #     ax1.imshow(backplotFinal[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+    #     ax1.set_title('backplot')
+    #     ax1.axis('off')
+    #     ax2=plt.subplot(1,2,2)                    
+    #     ax2.imshow(imgs[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+    #     ax2.set_title('original image')
+    #     ax2.axis('off')
+    #     #plt.figure(figsize=(15, 12))  
+    #     #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
+    #     #plt.colorbar()
+    #     plt.show()
 
-    plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/'+imgName+'-denoised.png')    
+    # plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/'+imgName+'-denoised.png')    
 
     end = time()
     print(f'Total time: {end - start} seconds!')
 
-    plt.figure(figsize=(20,20))
+    # plt.figure(figsize=(20,20))
 
-    img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(imgs[0][radius:-radius,radius:-radius]))))
-    ax1=plt.subplot(1,2,1)
-    ax1.imshow(img,cmap='gray')
-    ax1.axis('off')
-    ax1.set_title('FFT of original image')
-    img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(backplotFinal[0][radius:-radius,radius:-radius]))))
-    ax1=plt.subplot(1,2,2)
-    ax1.imshow(img,cmap='gray')
-    ax1.axis('off')
-    ax1.set_title('FFT of denoised image in')
-    plt.show()
+    # img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(imgs[0][radius:-radius,radius:-radius]))))
+    # ax1=plt.subplot(1,2,1)
+    # ax1.imshow(img,cmap='gray')
+    # ax1.axis('off')
+    # ax1.set_title('FFT of original image')
+    # img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(backplotFinal[0][radius:-radius,radius:-radius]))))
+    # ax1=plt.subplot(1,2,2)
+    # ax1.imshow(img,cmap='gray')
+    # ax1.axis('off')
+    # ax1.set_title('FFT of denoised image in')
+    # plt.show()
 
     return backplotFinal
 
 # denoise(folderPath, imgName, rerun = 15, radius=23)
 # cProfile.run('denoise(folderPath, imgName, rerun = 15, radius=23)')
 
-pr = cProfile.Profile()
-pr.enable()
-denoise(folderPath, imgName, rerun = 15, radius=23)
-pr.disable()
-s = io.StringIO()
-sortby = 'cumulative'
-ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-ps.print_stats("denoise")
-print(s.getvalue())
+# def main():
+# pr = cProfile.Profile()
+# pr.enable()
+# denoise(folderPath, imgName, rerun = 15, radius=23)
+# pr.disable()
+# s = io.StringIO()
+# sortby = 'cumulative'
+# ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+# ps.print_stats("denoise")
+# print(s.getvalue())
+
+if __name__ == '__main__':
+    freeze_support()
+    main()
