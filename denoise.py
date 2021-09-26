@@ -6,17 +6,19 @@ import io
 import pstats
 
 from src import helperfuncs
-# from src_parallel import classify
-from src import classify
+from src_parallel import classify
+# from src import classify
 from src import cluster
 
 from multiprocessing import freeze_support
 
 def main():
 
-    folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-4/NMC111_delith_15000000X_ABF_stack2/' # Maxime/' #sample 2/'
-    imgName = 'NMC111_delith_15000000X_ABF_stack2.dm3'
-    rerun = 15
+    # folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-4/NMC111_delith_15000000X_ABF_stack2/' # Maxime/' #sample 2/'
+    folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/'
+    # imgName = 'NMC111_delith_15000000X_ABF_stack2.dm3'
+    imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
+    rerun = 2
     radius = 23
 
 
@@ -88,22 +90,23 @@ def main():
     backplot_end = time()
     print(f'Time for backplotting-2 : {backplot_end - backplot_start} seconds!')
 
-    # for i in range(len(imgs)):
-    #     plt.figure(figsize=(2*15, 2*7)) 
-    #     ax1=plt.subplot(1,2,1)                    
-    #     ax1.imshow(backplotFinal[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
-    #     ax1.set_title('backplot')
-    #     ax1.axis('off')
-    #     ax2=plt.subplot(1,2,2)                    
-    #     ax2.imshow(imgs[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
-    #     ax2.set_title('original image')
-    #     ax2.axis('off')
-    #     #plt.figure(figsize=(15, 12))  
-    #     #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
-    #     #plt.colorbar()
-    #     plt.show()
+    for i in range(len(imgs)):
+        plt.figure(figsize=(2*15, 2*7)) 
+        ax1=plt.subplot(1,2,1)                    
+        ax1.imshow(backplotFinal[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+        ax1.set_title('backplot')
+        ax1.axis('off')
+        ax2=plt.subplot(1,2,2)                    
+        ax2.imshow(imgs[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+        ax2.set_title('original image')
+        ax2.axis('off')
+        #plt.figure(figsize=(15, 12))  
+        #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
+        #plt.colorbar()
+        # plt.show()
+        break
 
-    # plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/'+imgName+'-denoised.png')    
+    plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/parallel-'+imgName+'-denoised.png')    
 
     end = time()
     print(f'Total time: {end - start} seconds!')
