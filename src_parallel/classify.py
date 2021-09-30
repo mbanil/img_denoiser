@@ -3,9 +3,9 @@ from skimage.feature import match_template
 from copy import deepcopy
 import multiprocessing as mp
 
-def tempfuncname(radius, imgs, templates, maxNumberInClass, minNumberInClass):
-
-    maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, imgs, templates)
+def tempfuncname(radius, imgs, templates, maxNumberInClass, minNumberInClass, pool):
+    
+    maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, imgs, templates, pool)
 
     newTemplates = generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultindices, radius, maxNumberInClass, minNumberInClass)
             
@@ -13,7 +13,7 @@ def tempfuncname(radius, imgs, templates, maxNumberInClass, minNumberInClass):
 
 
 
-def classifyTemplates(radius, imgs, templates):
+def classifyTemplates(radius, imgs, templates, pool):
 
     minradius = np.int16(radius/2)
     maxresultindices = []
@@ -23,11 +23,11 @@ def classifyTemplates(radius, imgs, templates):
     for img in imgs:
         firstrun=True
 
-        pool = mp.Pool(mp.cpu_count())
+        # pool = mp.Pool(mp.cpu_count())
 
-        results = pool.starmap_async(match_template, [(img, template) for template in templates]).get()
+        results = pool.starmap(match_template, [(img, template) for template in templates])
 
-        pool.close()
+        # pool.close()
 
         results = np.array(results)
         maxresult = np.amax(results, axis=0)

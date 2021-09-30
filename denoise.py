@@ -6,8 +6,8 @@ import io
 import pstats
 
 from src import helperfuncs
-from src_parallel import classify
-# from src import classify
+# from src_parallel import classify
+from src import classify
 from src import cluster
 
 from multiprocessing import freeze_support
