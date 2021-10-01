@@ -4,11 +4,13 @@ from time import time
 import cProfile
 import io
 import pstats
+import multiprocessing as mp
 
 from src import helperfuncs
-# from src_parallel import classify
-from src import classify
+from src_parallel import classify
+# from src import classify
 from src import cluster
+
 
 from multiprocessing import freeze_support
 
@@ -18,7 +20,7 @@ def main():
     folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/'
     # imgName = 'NMC111_delith_15000000X_ABF_stack2.dm3'
     imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
-    rerun = 2
+    rerun = 5
     radius = 23
 
 
@@ -35,7 +37,8 @@ def main():
 
     NumMainclasses=4
     MinNumberInClass=4
-    MaxNumberInClass=100
+    MaxNumberInClass=100*int(np.floor(np.sqrt(len(imgs))))
+    # MaxNumberInClass=100
 
 
     # n1_max=1
@@ -64,16 +67,22 @@ def main():
 
     rerun_ = rerun
     classsify_start = time()
+
+    pool = mp.Pool(mp.cpu_count())
+
     while rerun>0:
-        templates = classify.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
+        templates = classify.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass, pool= pool)
         rerun-=1
+
     classify_end = time()
     print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
 
     backplot_start = time()
-    backplot, min, max, templateMatchingResults = classify.backplotImg(radius, imgs, templates)
+    backplot, min, max, templateMatchingResults = classify.backplotImg(radius, imgs, templates, pool)
     backplot_end = time()
     print(f'Time for backplotting-1 : {backplot_end - backplot_start} seconds!')
+
+    pool.close()
     
     sort_start = time()
     picDic = cluster.sortTemplates(imgs, templateMatchingResults, radius, templates)
@@ -93,11 +102,11 @@ def main():
     for i in range(len(imgs)):
         plt.figure(figsize=(2*15, 2*7)) 
         ax1=plt.subplot(1,2,1)                    
-        ax1.imshow(backplotFinal[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+        ax1.imshow(backplotFinal[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=0,vmax=512)
         ax1.set_title('backplot')
         ax1.axis('off')
         ax2=plt.subplot(1,2,2)                    
-        ax2.imshow(imgs[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+        ax2.imshow(imgs[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=0,vmax=512)
         ax2.set_title('original image')
         ax2.axis('off')
         #plt.figure(figsize=(15, 12))  

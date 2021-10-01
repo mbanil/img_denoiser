@@ -25,7 +25,7 @@ def classifyTemplates(radius, imgs, templates, pool):
 
         # pool = mp.Pool(mp.cpu_count())
 
-        results = pool.starmap(match_template, [(img, template) for template in templates])
+        results = pool.starmap_async(match_template, [(img, template) for template in templates]).get()
 
         # pool.close()
 
@@ -114,8 +114,8 @@ def generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultin
     return deepcopy(newTemplates)
 
 
-def backplotImg(radius, imgs, templates):
-    maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, imgs, templates)
+def backplotImg(radius, imgs, templates, pool):
+    maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, imgs, templates, pool)
 
     
 
