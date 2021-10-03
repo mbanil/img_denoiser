@@ -66,7 +66,10 @@ def build_model(imgs,templates):
 
     print(torch.__version__)
 
-    templates = np.array(templates)
+    for template in templates:
+        template -= np.mean(template)
+
+    templates = np.array(templates) 
     templates_newaxis = templates[:, np.newaxis,:,:]
     custom_filter = torch.tensor(templates_newaxis)
     print(custom_filter.shape)
@@ -80,7 +83,7 @@ def build_model(imgs,templates):
     output = F.conv2d(x, custom_filter, padding=0)
     ouput_result = output.cpu().detach().numpy()
 
-    dotproduct_result = torch.dot(torch.tensor(imgs_arr), torch.tensor(templates))
+    # dotproduct_result = torch.dot(torch.tensor(imgs_arr), torch.tensor(templates))
 
     return ouput_result
 
