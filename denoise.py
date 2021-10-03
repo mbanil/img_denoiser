@@ -37,7 +37,7 @@ def main():
 
     NumMainclasses=4
     MinNumberInClass=4
-    MaxNumberInClass=100*int(np.floor(np.sqrt(len(imgs))))
+    MaxNumberInClass=100*int(np.ceil(np.sqrt(len(imgs))))
     # MaxNumberInClass=100
 
 
@@ -56,7 +56,6 @@ def main():
 
     # plt.show()
 
-    
     gen_start = time()
     templates = helperfuncs.generateTemplates(startPosList=startPosList, imgs=imgs, radius=radius)
     templates = helperfuncs.findDissimilarTemplates(templates = templates, imgs = imgs, radius = radius, minTemplateClasses = NumMainclasses)
@@ -72,12 +71,14 @@ def main():
 
     while rerun>0:
         templates = classify.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass, pool= pool)
+        # templates = classify.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
         rerun-=1
 
     classify_end = time()
     print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
 
     backplot_start = time()
+    # backplot, min, max, templateMatchingResults = classify.backplotImg(radius, imgs, templates)
     backplot, min, max, templateMatchingResults = classify.backplotImg(radius, imgs, templates, pool)
     backplot_end = time()
     print(f'Time for backplotting-1 : {backplot_end - backplot_start} seconds!')

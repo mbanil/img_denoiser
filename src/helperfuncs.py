@@ -13,6 +13,7 @@ def loadData(folderPath, fileName):
             b= np.float64(io.imread(folderPath + fileName))
             for j in range(b.shape[0]):
                 imgs.append(b[j,:,:])
+                break
         else:   
             imgs.append(io.imread(folderPath + fileName))
     elif fileName.lower().endswith(('.dm3','.emd')):
