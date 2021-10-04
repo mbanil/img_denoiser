@@ -14,7 +14,7 @@ t = t/3
   
 # plotting the points 
 plt.plot(pixels, t)
-plt.xlabel('imageSize(n*n)')
+plt.xlabel('No. of pixels')
 plt.ylabel('Time in secs')
 plt.title('Time-Complexity')
 
