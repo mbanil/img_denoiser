@@ -4,27 +4,18 @@ from time import time
 import cProfile
 import io
 import pstats
-import multiprocessing as mp
 
 from src import helperfuncs
-from src_parallel import classify
-# from src import classify
+from src import classify
 from src import cluster
 
 
-from multiprocessing import freeze_support
 
-def main():
-
-    folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-4/NMC111_delith_15000000X_ABF_stack2/' # Maxime/' #sample 2/'
-    # folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/'
-    imgName = 'NMC111_delith_15000000X_ABF_stack2.dm3'
-    # imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
-    rerun = 2
-    radius = 23
+folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' # Maxime/' #sample 2/'
+imgName = '18_04_27_Thomas_28618_0016.dm3'
 
 
-# def denoise(folderPath, imgName, rerun = 15, radius=23):
+def denoise(folderPath, imgName, rerun = 15, radius=23):
 
     start = time()
 
@@ -37,8 +28,7 @@ def main():
 
     NumMainclasses=4
     MinNumberInClass=4
-    MaxNumberInClass=100*int(np.ceil(np.sqrt(len(imgs))))
-    # MaxNumberInClass=100
+    MaxNumberInClass=100
 
 
     # n1_max=1
@@ -56,34 +46,25 @@ def main():
 
     # plt.show()
 
+    
     gen_start = time()
     templates = helperfuncs.generateTemplates(startPosList=startPosList, imgs=imgs, radius=radius)
     templates = helperfuncs.findDissimilarTemplates(templates = templates, imgs = imgs, radius = radius, minTemplateClasses = NumMainclasses)
     gen_end = time()
     print(f'Time for generating basic templates: {gen_end - gen_start} seconds!')
 
-    freeze_support()
-
     rerun_ = rerun
     classsify_start = time()
-
-    pool = mp.Pool(mp.cpu_count())
-
     while rerun>0:
-        templates = classify.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass, pool= pool)
-        # templates = classify.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
+        templates = classify.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
         rerun-=1
-
     classify_end = time()
     print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
 
     backplot_start = time()
-    # backplot, min, max, templateMatchingResults = classify.backplotImg(radius, imgs, templates)
-    backplot, min, max, templateMatchingResults = classify.backplotImg(radius, imgs, templates, pool)
+    backplot, min, max, templateMatchingResults = classify.backplotImg(radius, imgs, templates)
     backplot_end = time()
     print(f'Time for backplotting-1 : {backplot_end - backplot_start} seconds!')
-
-    pool.close()
     
     sort_start = time()
     picDic = cluster.sortTemplates(imgs, templateMatchingResults, radius, templates)
@@ -113,44 +94,38 @@ def main():
         #plt.figure(figsize=(15, 12))  
         #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
         #plt.colorbar()
-        # plt.show()
-        break
+        plt.show()
 
-    plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/parallel-'+imgName+'-denoised.png')    
+    plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/'+imgName+'-denoised.png')    
 
     end = time()
     print(f'Total time: {end - start} seconds!')
 
-    # plt.figure(figsize=(20,20))
+    plt.figure(figsize=(20,20))
 
-    # img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(imgs[0][radius:-radius,radius:-radius]))))
-    # ax1=plt.subplot(1,2,1)
-    # ax1.imshow(img,cmap='gray')
-    # ax1.axis('off')
-    # ax1.set_title('FFT of original image')
-    # img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(backplotFinal[0][radius:-radius,radius:-radius]))))
-    # ax1=plt.subplot(1,2,2)
-    # ax1.imshow(img,cmap='gray')
-    # ax1.axis('off')
-    # ax1.set_title('FFT of denoised image in')
-    # plt.show()
+    img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(imgs[0][radius:-radius,radius:-radius]))))
+    ax1=plt.subplot(1,2,1)
+    ax1.imshow(img,cmap='gray')
+    ax1.axis('off')
+    ax1.set_title('FFT of original image')
+    img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(backplotFinal[0][radius:-radius,radius:-radius]))))
+    ax1=plt.subplot(1,2,2)
+    ax1.imshow(img,cmap='gray')
+    ax1.axis('off')
+    ax1.set_title('FFT of denoised image in')
+    plt.show()
 
     return backplotFinal
 
 # denoise(folderPath, imgName, rerun = 15, radius=23)
 # cProfile.run('denoise(folderPath, imgName, rerun = 15, radius=23)')
 
-# def main():
-# pr = cProfile.Profile()
-# pr.enable()
-# denoise(folderPath, imgName, rerun = 15, radius=23)
-# pr.disable()
-# s = io.StringIO()
-# sortby = 'cumulative'
-# ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-# ps.print_stats("denoise")
-# print(s.getvalue())
-
-if __name__ == '__main__':
-    freeze_support()
-    main()
+pr = cProfile.Profile()
+pr.enable()
+denoise(folderPath, imgName, rerun = 15, radius=23)
+pr.disable()
+s = io.StringIO()
+sortby = 'cumulative'
+ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+ps.print_stats("denoise")
+print(s.getvalue())
