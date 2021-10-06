@@ -144,8 +144,12 @@ def backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults):
     mymax=[]
     for i in range(len(imgs)):
         imgBackplots.append(overlay[i]/ ( overlayCount[i] + (np.double(overlayCount[i]==0))  ) ) 
-        mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
-        mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
+
+        try:
+            mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
+            mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
+        except:
+            print("Error occured")
         
     return imgBackplots, mymin, mymax
 
