@@ -27,6 +27,14 @@ def sortTemplates(imgs, templateMatchingResults, radius, templates):
                 picDic[jt].append(deepcopy(temp))
             picdicindex+=1
         
+    i = 0
+    for p in range(len(picDic)):
+        if picDic[i] == None:
+            del picDic[i]
+            i -= 1
+        i += 1
+
+        
     print("Used "+str(picdicindex)+"subimages")    
     if errorshappend>0:
         print(str(errorshappend)+"subimages were not included")    
