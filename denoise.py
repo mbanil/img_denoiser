@@ -84,17 +84,17 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
     for i in range(len(imgs)):
         plt.figure(figsize=(2*15, 2*7)) 
         ax1=plt.subplot(1,2,1)                    
-        ax1.imshow(backplotFinal[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
-        ax1.set_title('backplot')
+        ax1.imshow(imgs[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+        ax1.set_title('original image')
         ax1.axis('off')
         ax2=plt.subplot(1,2,2)                    
-        ax2.imshow(imgs[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
-        ax2.set_title('original image')
+        ax2.imshow(backplotFinal[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+        ax2.set_title('backplot')
         ax2.axis('off')
         #plt.figure(figsize=(15, 12))  
         #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
         #plt.colorbar()
-        plt.show()
+        # plt.show()
 
     plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/'+imgName+'-denoised.png')    
 
@@ -103,16 +103,16 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
 
     plt.figure(figsize=(20,20))
 
-    img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(imgs[0][radius:-radius,radius:-radius]))))
-    ax1=plt.subplot(1,2,1)
-    ax1.imshow(img,cmap='gray')
-    ax1.axis('off')
-    ax1.set_title('FFT of original image')
     img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(backplotFinal[0][radius:-radius,radius:-radius]))))
     ax1=plt.subplot(1,2,2)
     ax1.imshow(img,cmap='gray')
     ax1.axis('off')
     ax1.set_title('FFT of denoised image in')
+    img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(imgs[0][radius:-radius,radius:-radius]))))
+    ax1=plt.subplot(1,2,1)
+    ax1.imshow(img,cmap='gray')
+    ax1.axis('off')
+    ax1.set_title('FFT of original image')
     plt.show()
 
     return backplotFinal
