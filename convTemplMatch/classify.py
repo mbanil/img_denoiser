@@ -82,13 +82,16 @@ def generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultin
         for j in range(len(idxd[0])):
             # try:
             jt=np.int32(maxresultindex[idxd[0][j],idxd[1][j]])                
-            newTemplates[templateIDs[jt]]+=deepcopy(img[idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)])
-            ncount[templateIDs[jt]]+=1
             if ncount[templateIDs[jt]]>=maxNumberInClass:
                 # print(len(newTemplates))
                 templateIDs[jt]=max(templateIDs)+1
                 ncount.append(0)
                 newTemplates.append(np.zeros(templates[0].shape))
+
+            newTemplates[templateIDs[jt]]+=deepcopy(img[idxd[0][j]:(idxd[0][j]+2*radius),(idxd[1][j]):(idxd[1][j]+2*radius)])
+            ncount[templateIDs[jt]]+=1
+            
+            
             # except:
             #     print('skipt: #j#'+str(j)) 
 

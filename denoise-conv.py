@@ -15,14 +15,14 @@ from convTemplMatch import forwardPass
 
 
 folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' # Maxime/' #sample 2/'
-imgName = '18_04_27_Thomas_28618_0016.dm3'
+imgName = '18_04_27_Thomas_28618_0017.dm3'
 
 
-def denoise(folderPath, imgName, rerun = 5, templateSize = 23):
+def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
 
     start = time()
 
-    startPosList= [[84,404],[97,404],[88,404]]
+    startPosList= [[50,400]]
 
     load_start = time()
     imgs = helperfuncs.loadData(folderPath=folderPath, fileName=imgName)
@@ -34,53 +34,54 @@ def denoise(folderPath, imgName, rerun = 5, templateSize = 23):
     MaxNumberInClass=100
 
 
-    # n1_max=1
-    # n1=0
-    # n2_max=len(imgs)
-    # n2=0
-    # plt.figure(figsize=(20, 20*n2_max/n1_max)) 
-    # for img in imgs:
-    #     n2+=1    
-    #     vstd=np.std(img)
-    #     vmean=np.mean(img)         
-    #     ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
-    #     ax1.imshow(img,cmap='gray',vmin=np.min(img),vmax=np.max(img))
-    #     ax1.axis('off')
+    n1_max=1
+    n1=0
+    n2_max=len(imgs)
+    n2=0
+    plt.figure(figsize=(20, 20*n2_max/n1_max)) 
+    for img in imgs:
+        n2+=1    
+        vstd=np.std(img)
+        vmean=np.mean(img)         
+        ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
+        ax1.imshow(img,cmap='gray',vmin=np.min(img),vmax=np.max(img))
+        ax1.axis('off')
 
-    # plt.show()
+    plt.show()
 
     
     gen_start = time()
     templates = helperfuncs.generateTemplates(startPosList=startPosList, imgs=imgs, radius=templateSize)
-    templates = helperfuncs.findDissimilarTemplates(templates = templates, imgs = imgs, radius = templateSize, minTemplateClasses = NumMainclasses)
+    
+    # templates = helperfuncs.findDissimilarTemplates(templates = templates, imgs = imgs, radius = templateSize, minTemplateClasses = NumMainclasses)
     gen_end = time()
     print(f'Time for generating basic templates: {gen_end - gen_start} seconds!')
 
-    rerun_ = rerun
-    classsify_start = time()
-    while rerun>0:
-        templates = classify.tempfuncname(radius=templateSize, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
-        rerun-=1
-    classify_end = time()
-    print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
+    # rerun_ = rerun
+    # classsify_start = time()
+    # while rerun>0:
+    #     templates = classify.tempfuncname(radius=templateSize, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
+    #     rerun-=1
+    # classify_end = time()
+    # print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
 
-    
+    result = forwardPass.build_model(imgs, templates)
 
     # firstImg = result[0,1,:,:]
 
-    # n1_max=1
-    # n1=0
-    # n2_max=result.shape[1]
-    # n2=0
-    # plt.figure(figsize=(20, 20*n2_max/n1_max)) 
-    # for i in range(result.shape[1]):
-    #     n2+=1            
-    #     ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
-    #     ax1.imshow(result[0,i,:,:],cmap='gray')
+    n1_max=1
+    n1=0
+    n2_max=result.shape[1]
+    n2=0
+    plt.figure(figsize=(20, 20*n2_max/n1_max)) 
+    for i in range(result.shape[1]):
+        n2+=1            
+        ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
+        ax1.imshow(result[0,i,:,:],cmap='gray')
 
-    # plt.show()
-    # # plt.imshow(firstImg)
-    # print("Done")
+    plt.show()
+    # plt.imshow(firstImg)
+    print("Done")
 
 
 
@@ -104,6 +105,23 @@ def denoise(folderPath, imgName, rerun = 5, templateSize = 23):
     backplot, min, max, templateMatchingResults = classify.backplotImg(radius, imgs, templates)
     backplot_end = time()
     print(f'Time for backplotting-1 : {backplot_end - backplot_start} seconds!')
+
+
+
+    for i in range(len(imgs)):
+        plt.figure(figsize=(2*15, 2*7)) 
+        ax1=plt.subplot(1,2,1)                    
+        ax1.imshow(backplot[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+        ax1.set_title('backplot')
+        ax1.axis('off')
+        ax2=plt.subplot(1,2,2)                    
+        ax2.imshow(imgs[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+        ax2.set_title('original image')
+        ax2.axis('off')
+        #plt.figure(figsize=(15, 12))  
+        #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
+        #plt.colorbar()
+        plt.show()
     
     sort_start = time()
     picDic = cluster.sortTemplates(imgs, templateMatchingResults, radius, templates)

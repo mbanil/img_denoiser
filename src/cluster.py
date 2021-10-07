@@ -69,6 +69,7 @@ def cluster(radius, templates, picDic):
 
 
         # mycriterion='maxclust'
+        # improvSNR=1.5
         improvSNR=2.71
         numberofClusters=np.int(np.ceil((templateCount /(improvSNR**2))))
 
