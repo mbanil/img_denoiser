@@ -126,7 +126,7 @@ def backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults):
     for jt in range(len(centroidDic)):
         for jc in range(len(centroidDic[jt])):    
             for j in centroidDic[jt][jc]["id"]: 
-                myindex=picDic[jt][jc]["imgIndex"]  
+                myindex=picDic[jt][j]["imgIndex"]  
                 maxresultindex=templateMatchingResults["maxresultindices"][myindex]          
                 x=picDic[jt][j]["xIndex"]  
                 y=picDic[jt][j]["yIndex"]  
