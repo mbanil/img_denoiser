@@ -4,6 +4,8 @@ from time import time
 import cProfile
 import io
 import pstats
+import plotly.express as px
+import plotly
 
 from src import helperfuncs
 from src import classify
@@ -12,10 +14,10 @@ from src import cluster
 
 
 folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' # Maxime/' #sample 2/'
-imgName = '18_04_27_Thomas_28618_0017.dm3'
-# folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-4/NMC111_delith_15000000X_ABF_stack2/' # Maxime/' #sample 2/'
+imgName = '18_04_27_Thomas_28618_0016.dm3'
+# # folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-4/NMC111_delith_15000000X_ABF_stack2/' # Maxime/' #sample 2/'
 # folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/'
-# imgName = 'NMC111_delith_15000000X_ABF_stack2.dm3'
+# # imgName = 'NMC111_delith_15000000X_ABF_stack2.dm3'
 # imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
 
 
@@ -32,6 +34,7 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
 
     NumMainclasses=4
     MinNumberInClass=4
+    # MaxNumberInClass=100*int(np.ceil(np.sqrt(len(imgs))))
     MaxNumberInClass=100
 
 
@@ -59,11 +62,17 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
 
     rerun_ = rerun
     classsify_start = time()
+    templatesCount = []
     while rerun>0:
         templates = classify.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
+        if(len(templatesCount)!=0):
+            if(templatesCount[-1]==len(templates)):
+                break
+        templatesCount.append(len(templates))
+        print(f'Completed iteration')
         rerun-=1
     classify_end = time()
-    print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
+    print(f'Time for generating extra templates and classifying {rerun_ - rerun} times: {classify_end - classsify_start} seconds!')
 
     backplot_start = time()
     backplot, min, max, templateMatchingResults = classify.backplotImg(radius, imgs, templates)
@@ -75,10 +84,29 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
     sort_end = time()
     print(f'Time for sort : {sort_end - sort_start} seconds!')
 
+    templateClassesMap = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
+    i=1
+    for pic in picDic:
+        for p in pic:
+            templateClassesMap[p["xIndex"]:p["xIndex"]+10,p["yIndex"]:p["yIndex"]+10]=i
+        i+=1
+    fig = px.imshow(templateClassesMap, color_continuous_scale=px.colors.qualitative.Alphabet)
+    plotly.offline.plot(fig, filename='./charts/'+imgName+'-templateClasses.html')
+
     cluster_start = time()
     centroidDic = cluster.cluster(radius, templates, picDic)
     cluster_end = time()
     print(f'Time for clustering : {cluster_end - cluster_start} seconds!')
+
+    noOfPatchesPerPixel = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
+    for i in range(len(centroidDic)):
+        for centroid in centroidDic[i]:
+            ids = centroid["id"]
+            for id in ids:
+                pos = picDic[i][id]
+                noOfPatchesPerPixel[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=len(ids)
+    fig = px.imshow(noOfPatchesPerPixel)
+    plotly.offline.plot(fig, filename='./charts/'+imgName+'-noOfPatcherPerPixel.html')
 
     backplot_start = time()
     backplotFinal, min, max = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    

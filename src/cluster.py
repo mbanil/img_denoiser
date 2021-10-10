@@ -31,7 +31,7 @@ def sortTemplates(imgs, templateMatchingResults, radius, templates):
     if errorshappend>0:
         print(str(errorshappend)+"subimages were not included")    
   
-    return picDic
+    return deepcopy(picDic)
         
 
 

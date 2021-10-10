@@ -17,7 +17,7 @@ pixels = np.array([128*128, 256*256,500*600,500*800,625*800,600*1024,800*1024,10
 t = np.array([0.79,1.99, 25.91,43.12,65.33,103.76,198.67,313.77])
   
 # plotting the points 
-plt.plot(pixels, t)
+plt.plot(pixels, t,'-bo')
 plt.xlabel('No. of pixels')
 plt.ylabel('Time in secs')
 plt.title('Time-Complexity')
