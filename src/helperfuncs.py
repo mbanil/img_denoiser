@@ -14,7 +14,7 @@ def loadData(folderPath, fileName):
             for j in range(b.shape[0]):
                 imgs.append(b[j,:,:])
         else:   
-            imgs.append(io.imread(folderPath + fileName))
+            imgs.append(np.float64(io.imread(folderPath + fileName)))
     elif fileName.lower().endswith(('.dm3','.emd')):
         dm3Data=hs.load(folderPath + fileName)
         if fileName.lower().endswith(('.emd')):

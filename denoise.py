@@ -12,9 +12,11 @@ from src import classify
 from src import cluster
 
 
+# folderPath ="C:/Users/anilm/Downloads/"
+# imgName = "car.png"
 
 folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' # Maxime/' #sample 2/'
-imgName = '18_04_27_Thomas_28618_0016.dm3'
+imgName = '18_04_27_Thomas_28618_0017.dm3'
 # # folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-4/NMC111_delith_15000000X_ABF_stack2/' # Maxime/' #sample 2/'
 # folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/'
 # # imgName = 'NMC111_delith_15000000X_ABF_stack2.dm3'
@@ -25,7 +27,7 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
 
     start = time()
 
-    startPosList= [[84-radius,404-radius],[97-radius,404-radius],[88-radius,404-radius]]
+    startPosList= [[84-radius,104-radius],[97-radius,204-radius],[88-radius,154-radius]]
 
     load_start = time()
     imgs = helperfuncs.loadData(folderPath=folderPath, fileName=imgName)
