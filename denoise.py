@@ -4,6 +4,7 @@ from time import time
 import cProfile
 import io
 import pstats
+from numpy.core.fromnumeric import var
 import plotly.express as px
 import plotly
 
@@ -101,14 +102,26 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
     print(f'Time for clustering : {cluster_end - cluster_start} seconds!')
 
     noOfPatchesPerPixel = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
+    varianceMap = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
     for i in range(len(centroidDic)):
         for centroid in centroidDic[i]:
             ids = centroid["id"]
+            variance = np.zeros((2*radius,2*radius))
             for id in ids:
                 pos = picDic[i][id]
+                variance += (pos["template"]-centroid["centroid"])
                 noOfPatchesPerPixel[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=len(ids)
+            variance /= len(ids)
+            for id in ids:
+                pos = picDic[i][id]
+                varianceMap[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=variance
+
+
     fig = px.imshow(noOfPatchesPerPixel)
     plotly.offline.plot(fig, filename='./charts/'+imgName+'-noOfPatcherPerPixel.html')
+
+    fig = px.imshow(varianceMap)
+    plotly.offline.plot(fig, filename='./charts/'+imgName+'-varianceMap.html')
 
     backplot_start = time()
     backplotFinal, min, max = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    
