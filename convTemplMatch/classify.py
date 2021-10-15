@@ -25,6 +25,11 @@ def classifyTemplates(radius, imgs, templates):
 
         results = forwardPass.build_model(imgs, templates)
 
+        results += np.min(results)
+        results /= np.max(results)
+        results *= 100
+
+
 
         for t in range(results.shape[1]): 
             # result=match_template(img, templates[t])
