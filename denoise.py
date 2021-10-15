@@ -109,9 +109,17 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
             variance = np.zeros((2*radius,2*radius))
             for id in ids:
                 pos = picDic[i][id]
-                variance += (pos["template"]-centroid["centroid"])
+                variance += (pos["template"]-centroid["centroid"])**2
                 noOfPatchesPerPixel[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=len(ids)
             variance /= len(ids)
+
+            fig = px.imshow(variance)
+            plotly.offline.plot(fig, filename='./charts/'+imgName+'-variance.html')
+
+            fig = px.imshow(centroid["centroid"])
+            plotly.offline.plot(fig, filename='./charts/'+imgName+'-centroid.html')
+
+
             for id in ids:
                 pos = picDic[i][id]
                 varianceMap[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=variance
