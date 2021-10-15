@@ -4,6 +4,8 @@ from time import time
 import cProfile
 import io
 import pstats
+import plotly
+import plotly.express as px
 
 from src import helperfuncs
 # from src import classify
@@ -22,7 +24,7 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
 
     start = time()
 
-    startPosList= [[50,400]]
+    startPosList= [[25,150]]
 
     load_start = time()
     imgs = helperfuncs.loadData(folderPath=folderPath, fileName=imgName)
@@ -34,24 +36,36 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
     MaxNumberInClass=100
 
 
-    n1_max=1
-    n1=0
-    n2_max=len(imgs)
-    n2=0
-    plt.figure(figsize=(20, 20*n2_max/n1_max)) 
-    for img in imgs:
-        n2+=1    
-        vstd=np.std(img)
-        vmean=np.mean(img)         
-        ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
-        ax1.imshow(img,cmap='gray',vmin=np.min(img),vmax=np.max(img))
-        ax1.axis('off')
+    # n1_max=1
+    # n1=0
+    # n2_max=len(imgs)
+    # n2=0
+    # plt.figure(figsize=(20, 20*n2_max/n1_max)) 
+    # for img in imgs:
+    #     n2+=1    
+    #     vstd=np.std(img)
+    #     vmean=np.mean(img)         
+    #     ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
+    #     ax1.imshow(img,cmap='gray',vmin=np.min(img),vmax=np.max(img))
+    #     ax1.axis('off')
 
     plt.show()
 
     
     gen_start = time()
     templates = helperfuncs.generateTemplates(startPosList=startPosList, imgs=imgs, radius=templateSize)
+
+    # n1_max=1
+    # n1=0
+    # n2_max=len(templates)
+    # n2=0
+    # plt.figure(figsize=(5, 5*n2_max/n1_max)) 
+    # for i in range(len(templates)):
+    #     n2+=1            
+    #     ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
+    #     ax1.imshow(templates[i],cmap='gray')
+
+    plt.show()
     
     # templates = helperfuncs.findDissimilarTemplates(templates = templates, imgs = imgs, radius = templateSize, minTemplateClasses = NumMainclasses)
     gen_end = time()
@@ -67,21 +81,44 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
 
     result = forwardPass.build_model(imgs, templates)
 
+    fig = px.imshow(result[0,0,:,:])
+    plotly.offline.plot(fig, filename='./'+imgName+'-conv.html')
+
     # firstImg = result[0,1,:,:]
 
-    n1_max=1
-    n1=0
-    n2_max=result.shape[1]
-    n2=0
-    plt.figure(figsize=(20, 20*n2_max/n1_max)) 
-    for i in range(result.shape[1]):
-        n2+=1            
-        ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
-        ax1.imshow(result[0,i,:,:],cmap='gray')
+    # n1_max=1
+    # n1=0
+    # n2_max=result.shape[1]
+    # n2=0
+    # plt.figure(figsize=(20, 20*n2_max/n1_max)) 
+    # for i in range(result.shape[1]):
+    #     n2+=1            
+    #     ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
+    #     ax1.imshow(result[0,i,:,:],cmap='gray')
 
     plt.show()
     # plt.imshow(firstImg)
     print("Done")
+
+    idx = (-result[0,0,:,:].flatten()).argsort()
+    idxd=np.unravel_index(idx,result[0,0,:,:].shape)
+
+    similarTemplates = []
+
+    
+    n1_max=1
+    n1=0
+    n2_max=10
+    n2=0
+    plt.figure(figsize=(10, 10*n2_max/n1_max)) 
+
+    for i in range(10):
+        similarTemplates.append(imgs[0][idxd[0][i]:idxd[0][i]+2*templateSize,idxd[1][i]:idxd[1][i]+2*templateSize])
+        n2+=1            
+        ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
+        ax1.imshow(similarTemplates[i],cmap='gray')
+    
+
 
 
 
@@ -121,7 +158,7 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
         #plt.figure(figsize=(15, 12))  
         #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
         #plt.colorbar()
-        plt.show()
+        # plt.show()
     
     sort_start = time()
     picDic = cluster.sortTemplates(imgs, templateMatchingResults, radius, templates)
@@ -151,7 +188,7 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
         #plt.figure(figsize=(15, 12))  
         #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
         #plt.colorbar()
-        plt.show()
+        # plt.show()
 
     plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/convTemp'+imgName+'-denoised.png')    
 
