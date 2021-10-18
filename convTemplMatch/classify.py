@@ -23,12 +23,13 @@ def classifyTemplates(radius, imgs, templates):
     for img in imgs:
         firstrun=True
 
-        results = forwardPass.build_model(imgs, templates)
+        results = forwardPass.build_model([img], templates)
 
-        results += np.min(results)
-        results /= np.max(results)
-        results *= 100
+        convImg = np.sum(img*img)
 
+        for i in range(results.shape[1]):
+            convTemplate = np.sum(templates[i]*templates[i])
+            results[:,i,:,:] /= np.sqrt(convImg*convTemplate)
 
 
         for t in range(results.shape[1]): 

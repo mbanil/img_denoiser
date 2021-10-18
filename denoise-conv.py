@@ -24,7 +24,7 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
 
     start = time()
 
-    startPosList= [[25,150]]
+    startPosList= [[25,150],[75,250]]
 
     load_start = time()
     imgs = helperfuncs.loadData(folderPath=folderPath, fileName=imgName)
@@ -71,18 +71,18 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
     gen_end = time()
     print(f'Time for generating basic templates: {gen_end - gen_start} seconds!')
 
-    # rerun_ = rerun
-    # classsify_start = time()
-    # while rerun>0:
-    #     templates = classify.tempfuncname(radius=templateSize, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
-    #     rerun-=1
-    # classify_end = time()
-    # print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
+    rerun_ = rerun
+    classsify_start = time()
+    while rerun>0:
+        templates = classify.tempfuncname(radius=templateSize, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
+        rerun-=1
+    classify_end = time()
+    print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
 
-    result = forwardPass.build_model(imgs, templates)
+    # result = forwardPass.build_model(imgs, templates)
 
-    fig = px.imshow(result[0,0,:,:])
-    plotly.offline.plot(fig, filename='./'+imgName+'-conv.html')
+    # fig = px.imshow(result[0,0,:,:])
+    # plotly.offline.plot(fig, filename='./'+imgName+'-conv.html')
 
     # firstImg = result[0,1,:,:]
 
@@ -96,27 +96,27 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
     #     ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
     #     ax1.imshow(result[0,i,:,:],cmap='gray')
 
-    plt.show()
-    # plt.imshow(firstImg)
-    print("Done")
+    # plt.show()
+    # # plt.imshow(firstImg)
+    # print("Done")
 
-    idx = (-result[0,0,:,:].flatten()).argsort()
-    idxd=np.unravel_index(idx,result[0,0,:,:].shape)
+    # idx = (-result[0,0,:,:].flatten()).argsort()
+    # idxd=np.unravel_index(idx,result[0,0,:,:].shape)
 
-    similarTemplates = []
+    # similarTemplates = []
 
     
-    n1_max=1
-    n1=0
-    n2_max=10
-    n2=0
-    plt.figure(figsize=(10, 10*n2_max/n1_max)) 
+    # n1_max=1
+    # n1=0
+    # n2_max=10
+    # n2=0
+    # plt.figure(figsize=(10, 10*n2_max/n1_max)) 
 
-    for i in range(10):
-        similarTemplates.append(imgs[0][idxd[0][i]:idxd[0][i]+2*templateSize,idxd[1][i]:idxd[1][i]+2*templateSize])
-        n2+=1            
-        ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
-        ax1.imshow(similarTemplates[i],cmap='gray')
+    # for i in range(10):
+    #     similarTemplates.append(imgs[0][idxd[0][i]:idxd[0][i]+2*templateSize,idxd[1][i]:idxd[1][i]+2*templateSize])
+    #     n2+=1            
+    #     ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
+    #     ax1.imshow(similarTemplates[i],cmap='gray')
     
 
 
@@ -164,6 +164,16 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
     picDic = cluster.sortTemplates(imgs, templateMatchingResults, radius, templates)
     sort_end = time()
     print(f'Time for sort : {sort_end - sort_start} seconds!')
+
+    templateClassesMap = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
+    i=1
+    for pic in picDic:
+        for p in pic:
+            templateClassesMap[p["xIndex"]:p["xIndex"]+10,p["yIndex"]:p["yIndex"]+10]=i
+        i+=1
+    fig = px.imshow(templateClassesMap, color_continuous_scale=px.colors.qualitative.Alphabet)
+    plotly.offline.plot(fig, filename='./'+imgName+'-templateClasses.html')
+
 
     cluster_start = time()
     centroidDic = cluster.cluster(radius, templates, picDic)
