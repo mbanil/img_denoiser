@@ -102,39 +102,42 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
     print(f'Time for clustering : {cluster_end - cluster_start} seconds!')
 
     noOfPatchesPerPixel = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
-    varianceMap = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
+    # varianceApproxMap = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
     for i in range(len(centroidDic)):
         for centroid in centroidDic[i]:
             ids = centroid["id"]
-            variance = np.zeros((2*radius,2*radius))
+            # varianceApprox = np.zeros((2*radius,2*radius))
             for id in ids:
                 pos = picDic[i][id]
-                variance += (pos["template"]-centroid["centroid"])**2
+                # varianceApprox += (pos["template"]-centroid["centroid"])**2
                 noOfPatchesPerPixel[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=len(ids)
-            variance /= len(ids)
+            # varianceApprox /= len(ids)
 
-            fig = px.imshow(variance)
-            plotly.offline.plot(fig, filename='./charts/'+imgName+'-variance.html')
+            # fig = px.imshow(varianceApprox)
+            # plotly.offline.plot(fig, filename='./charts/'+imgName+'-varianceApprox.html')
 
-            fig = px.imshow(centroid["centroid"])
-            plotly.offline.plot(fig, filename='./charts/'+imgName+'-centroid.html')
+            # fig = px.imshow(centroid["centroid"])
+            # plotly.offline.plot(fig, filename='./charts/'+imgName+'-centroid.html')
 
 
-            for id in ids:
-                pos = picDic[i][id]
-                varianceMap[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=variance
+            # for id in ids:
+            #     pos = picDic[i][id]
+            #     varianceApproxMap[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=variance
 
 
     fig = px.imshow(noOfPatchesPerPixel)
     plotly.offline.plot(fig, filename='./charts/'+imgName+'-noOfPatcherPerPixel.html')
 
-    fig = px.imshow(varianceMap)
-    plotly.offline.plot(fig, filename='./charts/'+imgName+'-varianceMap.html')
+    # fig = px.imshow(varianceApproxMap)
+    # plotly.offline.plot(fig, filename='./charts/'+imgName+'-varianceApproxMap.html')
 
     backplot_start = time()
-    backplotFinal, min, max = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    
+    backplotFinal, min, max, overlayVariance = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    
     backplot_end = time()
     print(f'Time for backplotting-2 : {backplot_end - backplot_start} seconds!')
+
+    fig = px.imshow(overlayVariance[0][radius:-radius,radius:-radius])
+    plotly.offline.plot(fig, filename='./charts/'+imgName+'-overlayVariance.html')
 
     for i in range(len(imgs)):
         plt.figure(figsize=(2*15, 2*7)) 
