@@ -26,6 +26,8 @@ def loadData(folderPath, fileName):
             imgs.append(data[:,:,0])
         else:
             imgs.append(np.float64(dm3Data.data))
+            if len(imgs[0].shape)>2:
+                imgs = list(imgs[0])
     else:
         print('ERROR: filetyp not supported! Please contact me.')
 

@@ -39,7 +39,7 @@ def sortTemplates(imgs, templateMatchingResults, radius, templates):
     if errorshappend>0:
         print(str(errorshappend)+"subimages were not included")    
   
-    return picDic
+    return deepcopy(picDic)
         
 
 
@@ -76,11 +76,11 @@ def cluster(radius, templates, picDic):
         clusters_=fcluster(linked,  numberofClusters, criterion='maxclust')
 
         centroid=[None]*numberofClusters
+        variance= [np.zeros((2*radius,2*radius)) for i in range(numberofClusters)] 
         centroidCounter=[0]*numberofClusters
         clusterList = [None]*numberofClusters
 
         for j in range(len(clusters_)):
-            
             centroidCounter[clusters_[j]-1]+=1
             if(clusterList[clusters_[j]-1]==None):
                 centroid[clusters_[j]-1] = deepcopy(picDic[jt][j]["template"])
@@ -89,16 +89,21 @@ def cluster(radius, templates, picDic):
                 centroid[clusters_[j]-1] += deepcopy(picDic[jt][j]["template"])
                 clusterList[clusters_[j]-1].append(j)
 
-        
         for jc in range(numberofClusters):
             centroid[jc]/=max(centroidCounter[jc],1)
 
+        for j in range(len(clusters_)):
+            variance[clusters_[j]-1] += deepcopy((picDic[jt][j]["template"] - centroid[clusters_[j]-1])**2)
+
+        for jc in range(numberofClusters):
+            variance[jc]/=max(centroidCounter[jc]-1,1)
         
         subCentroid = []
         for jc in range(numberofClusters):
             subCentroid.append({
                 "centroid": deepcopy(centroid[jc]),
-                "id": deepcopy(clusterList[jc])
+                "id": deepcopy(clusterList[jc]),
+                "variance": deepcopy(variance[jc]) 
             })
         
         
@@ -121,7 +126,7 @@ def backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults):
     n=0
     pltminradius=3
 
-    
+
     overlay=[]
     overlayCount=[]
     overlayclass=[]
@@ -135,7 +140,7 @@ def backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults):
     for jt in range(len(centroidDic)):
         for jc in range(len(centroidDic[jt])):    
             for j in centroidDic[jt][jc]["id"]: 
-                myindex=picDic[jt][jc]["imgIndex"]  
+                myindex=picDic[jt][j]["imgIndex"]  
                 maxresultindex=templateMatchingResults["maxresultindices"][myindex]          
                 x=picDic[jt][j]["xIndex"]  
                 y=picDic[jt][j]["yIndex"]  
@@ -153,10 +158,49 @@ def backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults):
     mymax=[]
     for i in range(len(imgs)):
         imgBackplots.append(overlay[i]/ ( overlayCount[i] + (np.double(overlayCount[i]==0))  ) ) 
-        mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
-        mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
+
+        try:
+            mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
+            mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
+        except:
+            print("Error occured")
+
+
+    overlayVariance=[]
+    unWeightedAvg=[]
+    weights = []
+    for i in range(len(imgs)):
+        overlayVariance.append(np.zeros(img.shape))
+        unWeightedAvg.append(np.zeros(img.shape))
+        weights.append(np.zeros(img.shape))
+
+
+    for jt in range(len(centroidDic)):
+        for jc in range(len(centroidDic[jt])):    
+            for j in centroidDic[jt][jc]["id"]: 
+                myindex=picDic[jt][j]["imgIndex"]  
+                maxresultindex=templateMatchingResults["maxresultindices"][myindex]          
+                x=picDic[jt][j]["xIndex"]  
+                y=picDic[jt][j]["yIndex"] 
+
+                for _x in range(x, x+2*radius):
+                    for _y in range(y, y+2*radius):
+                        if(overlayVariance[myindex][_x,_y]==0):
+                            overlayVariance[myindex][_x,_y] = centroidDic[jt][jc]["variance"][_x-x,_y-y]
+                            weights[myindex][_x,_y] = backplotwindow[_x-x,_y-y]
+                            unWeightedAvg[myindex][_x,_y] = centroidDic[jt][jc]["centroid"][_x-x,_y-y]
+
+
+                        else:
+                            n = weights[myindex][_x,_y] + backplotwindow[_x-x,_y-y]
+                            delta = centroidDic[jt][jc]["centroid"][_x-x,_y-y] - unWeightedAvg[myindex][_x,_y]
+                            M2 = centroidDic[jt][jc]["variance"][_x-x,_y-y] + overlayVariance[myindex][_x,_y] + ((delta ** 2) * weights[myindex][_x,_y] * backplotwindow[_x-x,_y-y]) / n
+                            overlayVariance[myindex][_x,_y] = M2 / (n - 1)
+
+                            weights[myindex][_x,_y] = (weights[myindex][_x,_y]*0.5) + (backplotwindow[_x-x,_y-y]*0.5)
+                            unWeightedAvg[myindex][_x,_y] = (unWeightedAvg[myindex][_x,_y]*0.5) + (centroidDic[jt][jc]["centroid"][_x-x,_y-y]*0.5)
         
-    return imgBackplots, mymin, mymax
+    return imgBackplots, mymin, mymax, overlayVariance
 
 
 
