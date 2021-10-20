@@ -136,11 +136,17 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
     backplot_end = time()
     print(f'Time for backplotting-2 : {backplot_end - backplot_start} seconds!')
 
-    fig = px.imshow(overlayVariance[0][radius:-radius,radius:-radius])
+    fig = px.imshow(np.sqrt(overlayVariance[0][radius:-radius,radius:-radius]))
     plotly.offline.plot(fig, filename='./charts/'+imgName+'-overlayVariance.html')
 
+    fig = px.imshow(backplotFinal[0][radius:-radius,radius:-radius])
+    plotly.offline.plot(fig, filename='./charts/'+imgName+'-backplotFinal.html')
+
+    fig = px.imshow((backplotFinal[0][radius:-radius,radius:-radius] - imgs[0][radius:-radius,radius:-radius])**2)
+    plotly.offline.plot(fig, filename='./charts/'+imgName+'-diff.html')
+
     for i in range(len(imgs)):
-        plt.figure(figsize=(2*15, 2*7)) 
+        plt.figure(figsize=(2*15, 2*7))
         ax1=plt.subplot(1,2,1)                    
         ax1.imshow(imgs[i][radius:-radius,radius:-radius],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
         ax1.set_title('original image')
