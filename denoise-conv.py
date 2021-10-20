@@ -16,15 +16,22 @@ from convTemplMatch import forwardPass
 
 
 
-folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' # Maxime/' #sample 2/'
+# folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/' # Maxime/' #sample 2/'
+folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' 
 imgName = '18_04_27_Thomas_28618_0017.dm3'
+# imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
 
 
 def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
 
     start = time()
 
-    startPosList= [[25,150],[75,250]]
+    # startPosList= [[25,150],[75,250]]
+
+    radius= templateSize
+
+    startPosList= [[84-radius,104-radius],[97-radius,204-radius],[88-radius,154-radius]]
+
 
     load_start = time()
     imgs = helperfuncs.loadData(folderPath=folderPath, fileName=imgName)
@@ -33,8 +40,8 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
 
     NumMainclasses=4
     MinNumberInClass=4
-    MaxNumberInClass=100
-
+    # MaxNumberInClass=100
+    MaxNumberInClass=100*int(np.ceil(np.sqrt(len(imgs))))
 
     # n1_max=1
     # n1=0
@@ -49,11 +56,12 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
     #     ax1.imshow(img,cmap='gray',vmin=np.min(img),vmax=np.max(img))
     #     ax1.axis('off')
 
-    plt.show()
+    # plt.show()
 
     
     gen_start = time()
     templates = helperfuncs.generateTemplates(startPosList=startPosList, imgs=imgs, radius=templateSize)
+    templates = helperfuncs.findDissimilarTemplates(templates = templates, imgs = imgs, radius = templateSize, minTemplateClasses = NumMainclasses)
 
     # n1_max=1
     # n1=0
@@ -65,7 +73,7 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
     #     ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
     #     ax1.imshow(templates[i],cmap='gray')
 
-    plt.show()
+    # plt.show()
     
     # templates = helperfuncs.findDissimilarTemplates(templates = templates, imgs = imgs, radius = templateSize, minTemplateClasses = NumMainclasses)
     gen_end = time()
@@ -172,7 +180,7 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
             templateClassesMap[p["xIndex"]:p["xIndex"]+10,p["yIndex"]:p["yIndex"]+10]=i
         i+=1
     fig = px.imshow(templateClassesMap, color_continuous_scale=px.colors.qualitative.Alphabet)
-    plotly.offline.plot(fig, filename='./'+imgName+'-templateClasses.html')
+    plotly.offline.plot(fig, filename='./charts/'+imgName+'-convtemplateClasses.html')
 
 
     cluster_start = time()
@@ -181,7 +189,7 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
     print(f'Time for clustering : {cluster_end - cluster_start} seconds!')
 
     backplot_start = time()
-    backplotFinal, min, max = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    
+    backplotFinal, min, max, overlayVariance = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    
     backplot_end = time()
     print(f'Time for backplotting-2 : {backplot_end - backplot_start} seconds!')
 

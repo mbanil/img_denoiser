@@ -72,12 +72,12 @@ def build_model(imgs,templates):
     templates = np.array(templates) 
     templates_newaxis = templates[:, np.newaxis,:,:]
     custom_filter = torch.tensor(templates_newaxis)
-    print(custom_filter.shape)
+    # print(custom_filter.shape)
 
     imgs_arr = np.array(imgs)
     imgs_arr_newaxis = imgs_arr[np.newaxis,...]
     x = torch.tensor(imgs_arr_newaxis)
-    print(x.shape)
+    # print(x.shape)
 
 
     output = F.conv2d(x, custom_filter, padding=0)
