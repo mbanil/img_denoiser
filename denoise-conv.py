@@ -16,10 +16,10 @@ from convTemplMatch import forwardPass
 
 
 
-# folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/' # Maxime/' #sample 2/'
-folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' 
-imgName = '18_04_27_Thomas_28618_0017.dm3'
-# imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
+folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/' # Maxime/' #sample 2/'
+# folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' 
+# imgName = '18_04_27_Thomas_28618_0017.dm3'
+imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
 
 
 def denoise(folderPath, imgName, rerun = 15, templateSize = 23):

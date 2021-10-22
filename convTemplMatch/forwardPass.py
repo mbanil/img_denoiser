@@ -70,25 +70,26 @@ def build_model(imgs,templates):
         template -= np.mean(template)
 
     templates = np.array(templates) 
+    # templates_new = np.tile(templates[:,0,:,:], [, len(imgs),templates_newaxis.shape[1],templates_newaxis.shape[2]])
     templates_newaxis = templates[:, np.newaxis,:,:]
+    # templates_new = np.tile(templates_newaxis, [len(imgs),1,1,1])
     custom_filter = torch.tensor(templates_newaxis)
     # print(custom_filter.shape)
 
     imgs_arr = np.array(imgs)
-    imgs_arr_newaxis = imgs_arr[np.newaxis,...]
+    imgs_arr_newaxis = imgs_arr[:,np.newaxis,:,:]
     x = torch.tensor(imgs_arr_newaxis)
     # print(x.shape)
 
+    filters = torch.randn(4, 1, 46, 46)
+    inputs = torch.randn(2, 1, 1024, 1024)
+    out = F.conv2d(inputs, filters, padding=0)
 
-    output = F.conv2d(x, custom_filter, padding=0)
+
+    output = F.conv2d(x, custom_filter, padding=0, stride=1)
     ouput_result = output.cpu().detach().numpy()
 
     # dotproduct_result = torch.dot(torch.tensor(imgs_arr), torch.tensor(templates))
 
     return ouput_result
 
-
-
-
-    
-    
