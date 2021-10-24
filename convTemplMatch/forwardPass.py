@@ -81,11 +81,6 @@ def build_model(imgs,templates):
     x = torch.tensor(imgs_arr_newaxis)
     # print(x.shape)
 
-    filters = torch.randn(4, 1, 46, 46)
-    inputs = torch.randn(2, 1, 1024, 1024)
-    out = F.conv2d(inputs, filters, padding=0)
-
-
     output = F.conv2d(x, custom_filter, padding=0, stride=1)
     ouput_result = output.cpu().detach().numpy()
 
