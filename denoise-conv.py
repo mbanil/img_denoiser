@@ -134,8 +134,6 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
     # out = model.predict(input_mat)
     # print(out)
 
-    radius = templateSize
-
 
 
 

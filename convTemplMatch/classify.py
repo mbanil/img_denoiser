@@ -20,7 +20,7 @@ def classifyTemplates(radius, imgs, templates):
     maxresults = []
     sortedIndices = []
 
-    convResults = forwardPass.build_model(imgs[0:2], templates)
+    convResults = forwardPass.build_model(imgs, templates)
 
     for i in range(convResults.shape[0]):
         firstrun=True
@@ -31,7 +31,7 @@ def classifyTemplates(radius, imgs, templates):
         for j in range(convResult.shape[1]):
             convTemplate = np.sum(templates[j]*templates[j])
             convResult[j,:,:] /= np.sqrt(convImg*convTemplate)
-            result = convResult[0,j,:,:]
+            result = convResult[j,:,:]
             resultshape=result.shape
             # changes here required if using multimode
             if firstrun:

@@ -7,6 +7,7 @@ import pstats
 from numpy.core.fromnumeric import var
 import plotly.express as px
 import plotly
+import h5py
 
 from src import helperfuncs
 from src import classify
@@ -68,6 +69,7 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
     templatesCount = []
     while rerun>0:
         templates = classify.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
+        print(len(templates))
         if(len(templatesCount)!=0):
             if(templatesCount[-1]==len(templates)):
                 break
@@ -178,6 +180,9 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
     ax1.axis('off')
     ax1.set_title('FFT of original image')
     plt.show()
+
+    with h5py.File('denoiser_result.h5', 'w') as hf:
+        hf.create_dataset(imgName,  data=backplotFinal)   
 
     return backplotFinal
 
