@@ -3,8 +3,8 @@ import numpy as np
 from scipy.cluster.hierarchy import dendrogram, linkage  
 from scipy.cluster.hierarchy import fcluster
 
-import plotly.express as px
-import plotly
+# import plotly.express as px
+# import plotly
 
 def sortTemplates(imgs, templateMatchingResults, radius, templates):
     picDic = [None]*len(templates)

@@ -28,7 +28,7 @@ def classifyTemplates(radius, imgs, templates):
         convResult = convResults[i,:,:,:]
         convImg = np.sum(imgs[0]*imgs[0])
 
-        for j in range(convResult.shape[1]):
+        for j in range(convResult.shape[0]):
             convTemplate = np.sum(templates[j]*templates[j])
             convResult[j,:,:] /= np.sqrt(convImg*convTemplate)
             result = convResult[j,:,:]
