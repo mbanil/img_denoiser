@@ -3,8 +3,8 @@ import numpy as np
 from scipy.cluster.hierarchy import dendrogram, linkage  
 from scipy.cluster.hierarchy import fcluster
 
-import plotly.express as px
-import plotly
+# import plotly.express as px
+# import plotly
 
 def sortTemplates(imgs, templateMatchingResults, radius, templates):
     picDic = [None]*len(templates)
@@ -29,6 +29,14 @@ def sortTemplates(imgs, templateMatchingResults, radius, templates):
             else:
                 picDic[jt].append(deepcopy(temp))
             picdicindex+=1
+        
+    i = 0
+    for p in range(len(picDic)):
+        if picDic[i] == None:
+            del picDic[i]
+            i -= 1
+        i += 1
+
         
     print("Used "+str(picdicindex)+"subimages")    
     if errorshappend>0:
@@ -64,6 +72,7 @@ def cluster(radius, templates, picDic):
 
 
         # mycriterion='maxclust'
+        # improvSNR=1.5
         improvSNR=2.71
         # improvSNR=1.5
         numberofClusters=np.int(np.ceil((templateCount /(improvSNR**2))))
