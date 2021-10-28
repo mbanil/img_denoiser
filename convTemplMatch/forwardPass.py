@@ -66,6 +66,12 @@ def build_model(imgs,templates):
 
     print(torch.__version__)
 
+    # device casting
+    if torch.cuda.is_available():
+        device = torch.device("cuda:0")
+    else:
+        device = torch.device("cpu")
+
     for template in templates:
         template -= np.mean(template)
 
@@ -73,12 +79,12 @@ def build_model(imgs,templates):
     # templates_new = np.tile(templates[:,0,:,:], [, len(imgs),templates_newaxis.shape[1],templates_newaxis.shape[2]])
     templates_newaxis = templates[:, np.newaxis,:,:]
     # templates_new = np.tile(templates_newaxis, [len(imgs),1,1,1])
-    custom_filter = torch.tensor(templates_newaxis)
+    custom_filter = torch.tensor(templates_newaxis, dtype=torch.float32, device=device)
     # print(custom_filter.shape)
 
     imgs_arr = np.array(imgs)
     imgs_arr_newaxis = imgs_arr[:,np.newaxis,:,:]
-    x = torch.tensor(imgs_arr_newaxis)
+    x = torch.tensor(imgs_arr_newaxis, dtype=torch.float32, device=device)
     # print(x.shape)
 
     output = F.conv2d(x, custom_filter, padding=0, stride=1)
