@@ -2,13 +2,12 @@ from operator import le
 import matplotlib.pyplot as plt
 import numpy as np
 from time import time
-# import cProfile
-# import io
-# import pstats
 import multiprocessing as mp
 from multiprocessing import freeze_support
 from random import randint
 import torch
+import plotly.express as px
+import plotly
 
 from src import helperfuncs
 from src_parallel import classify_parallel
@@ -29,11 +28,7 @@ def main():
     clusteringFactor = 2.71
     analyze = False
 
-# def denoise(folderPath, imgName, rerun = 15, radius=23):
-
     start = time()
-
-    
 
     load_start = time()
     imgs = helperfuncs.loadData(folderPath=folderPath, fileName=imgName)
@@ -47,13 +42,9 @@ def main():
     for i in range(noOfInititalPatches):
         startPosList.append([randint(0,imgs[0].shape[0]-radius), randint(0,imgs[0].shape[0]-radius)])
 
-    # startPosList= [[84-radius,404-radius],[97-radius,404-radius],[88-radius,404-radius]]
-
-    NumMainclasses=4
     MinNumberInClass=4
     MaxNumberInClass=100*int(np.ceil(np.sqrt(len(imgs))))
-    # MaxNumberInClass=100
-
+    
     if analyze:
         n1_max=1
         n1=0
@@ -72,16 +63,13 @@ def main():
 
     gen_start = time()
     templates = helperfuncs.generateTemplates(startPosList=startPosList, imgs=imgs, radius=radius)
-    # templates = helperfuncs.findDissimilarTemplates(templates = templates, imgs = imgs, radius = radius, minTemplateClasses = NumMainclasses)
     gen_end = time()
     print(f'Time for generating basic templates: {gen_end - gen_start} seconds!')
 
     rerun_ = rerun
     classsify_start = time()
     templatesCount = []
-
     if len(imgs)>1:
-
         if torch.cuda.is_available():
             while rerun>0:
                 templates = classify_conv.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
@@ -93,7 +81,6 @@ def main():
                 print(f'Completed iteration')
                 rerun-=1
             backplot, min, max, templateMatchingResults = classify_conv.backplotImg(radius, imgs, templates)
-            
         else:
             pool = mp.Pool(mp.cpu_count())
             while rerun>0:
@@ -107,7 +94,6 @@ def main():
                 rerun-=1
             backplot, min, max, templateMatchingResults = classify_parallel.backplotImg(radius, imgs, templates, pool)
             pool.close()
-
     else:
         while rerun>0:
             templates = classify_conv.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
@@ -120,7 +106,6 @@ def main():
             rerun-=1
         backplot, min, max, templateMatchingResults = classify_conv.backplotImg(radius, imgs, templates)
         
-
     classify_end = time()
     print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
     
@@ -129,17 +114,48 @@ def main():
     sort_end = time()
     print(f'Time for sort : {sort_end - sort_start} seconds!')
 
+    if analyze:
+        templateClassesMap = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
+        i=1
+        for pic in picDic:
+            for p in pic:
+                templateClassesMap[p["xIndex"]:p["xIndex"]+10,p["yIndex"]:p["yIndex"]+10]=i
+            i+=1
+        fig = px.imshow(templateClassesMap, color_continuous_scale=px.colors.qualitative.Alphabet)
+        plotly.offline.plot(fig, filename='./charts/'+imgName+'-templateClasses.html')
+
     cluster_start = time()
     centroidDic = cluster.cluster(radius, templates, picDic, clusteringFactor)
     cluster_end = time()
     print(f'Time for clustering : {cluster_end - cluster_start} seconds!')
 
+    if analyze:
+        noOfPatchesPerPixel = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
+        for i in range(len(centroidDic)):
+            for centroid in centroidDic[i]:
+                ids = centroid["id"]
+                for id in ids:
+                    pos = picDic[i][id]
+                    noOfPatchesPerPixel[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=len(ids)
+
+        fig = px.imshow(noOfPatchesPerPixel)
+        plotly.offline.plot(fig, filename='./charts/'+imgName+'-noOfPatcherPerPixel.html')
+
     backplot_start = time()
-    backplotFinal, min, max = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    
+    backplotFinal, min, max, overlayVariance = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    
     backplot_end = time()
     print(f'Time for backplotting-2 : {backplot_end - backplot_start} seconds!')
 
     if analyze:
+        fig = px.imshow(np.sqrt(overlayVariance[0][radius:-radius,radius:-radius]))
+        plotly.offline.plot(fig, filename='./charts/'+imgName+'-overlayVariance.html')
+
+        fig = px.imshow(backplotFinal[0][radius:-radius,radius:-radius])
+        plotly.offline.plot(fig, filename='./charts/'+imgName+'-backplotFinal.html')
+
+        fig = px.imshow((backplotFinal[0][radius:-radius,radius:-radius] - imgs[0][radius:-radius,radius:-radius])**2)
+        plotly.offline.plot(fig, filename='./charts/'+imgName+'-diff.html')
+
         for i in range(len(imgs)):
             plt.figure(figsize=(2*15, 2*7)) 
             ax1=plt.subplot(1,2,1)                    
@@ -157,7 +173,6 @@ def main():
          
         plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/parallel-stack-'+imgName+'-denoised.png')    
 
-    if analyze:
         for i in range(len(imgs)):
             plt.figure(figsize=(20,20))
             img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(imgs[i][radius:-radius,radius:-radius]))))
@@ -177,21 +192,7 @@ def main():
 
     return backplotFinal
 
-
-
-# denoise(folderPath, imgName, rerun = 15, radius=23)
-# cProfile.run('denoise(folderPath, imgName, rerun = 15, radius=23)')
-
-# def main():
-# pr = cProfile.Profile()
-# pr.enable()
-# denoise(folderPath, imgName, rerun = 15, radius=23)
-# pr.disable()
-# s = io.StringIO()
-# sortby = 'cumulative'
-# ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-# ps.print_stats("denoise")
-# print(s.getvalue())
+    
 
 if __name__ == '__main__':
     freeze_support()
