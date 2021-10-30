@@ -47,7 +47,7 @@ def sortTemplates(imgs, templateMatchingResults, radius, templates):
 
 
 
-def cluster(radius, templates, picDic):
+def cluster(radius, templates, picDic, improvSNR):
     # generating a smooth transistion map:
     backplotwindow=np.zeros((2*radius,2*radius))
     x = np.linspace(0, 1, backplotwindow.shape[0])
@@ -72,9 +72,7 @@ def cluster(radius, templates, picDic):
 
 
         # mycriterion='maxclust'
-        # improvSNR=1.5
-        improvSNR=2.71
-        # improvSNR=1.5
+        # improvSNR=2.71
         numberofClusters=np.int(np.ceil((templateCount /(improvSNR**2))))
 
         clusters_=fcluster(linked,  numberofClusters, criterion='maxclust')

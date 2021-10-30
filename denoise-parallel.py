@@ -7,7 +7,7 @@ import pstats
 import multiprocessing as mp
 
 from src import helperfuncs
-from src_parallel import classify
+from src_parallel import classify_parallel as classify
 # from src import classify
 from src import cluster
 

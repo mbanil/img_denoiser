@@ -9,10 +9,9 @@ import plotly.express as px
 
 from src import helperfuncs
 # from src import classify
-from convTemplMatch import classify
+from src_conv import classify_conv as classify
 from src import cluster
-
-from convTemplMatch import forwardPass
+from src_conv import forwardPass
 
 
 
