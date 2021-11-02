@@ -8,6 +8,7 @@ from random import randint
 import torch
 import plotly.express as px
 import plotly
+import h5py
 
 from src import helperfuncs
 from src_parallel import classify_parallel
@@ -187,12 +188,15 @@ def main():
             ax1.set_title('FFT of denoised image in')
             plt.show()
 
+    with h5py.File('results/'+imgName+'.h5', 'w') as hf:
+        hf.create_dataset(imgName,  data=backplotFinal)
+
     end = time()
     print(f'Total time: {end - start} seconds!')
 
     return backplotFinal
 
-    
+
 
 if __name__ == '__main__':
     freeze_support()
