@@ -131,7 +131,7 @@ def backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults):
     backplotwindow=np.exp(-((4*np.maximum(0,(xv-0.5))**2-0.1)+(4*np.maximum(0,(yv-0.5))**2-0.1)))   
 
 
-    n=0
+    count=0
     pltminradius=3
 
 
@@ -168,10 +168,10 @@ def backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults):
 
                 # overlayclass[myindex][(x-pltminradius):(x+pltminradius),
                 #             (y-pltminradius):(y+pltminradius)]=maxresultindex[x,y]
-                n+=1    
+                count+=1    
                 #except:
                 #    pass
-    print("Used "+str(n)+"subimages")
+    print("Used "+str(count)+"subimages")
 
     imgBackplots = []
     mymin=[]

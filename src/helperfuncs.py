@@ -80,4 +80,14 @@ def findDissimilarTemplates(templates, imgs, radius, minTemplateClasses):
     
     return templates
 
+def adjustEdges(backPlots, imgs):
+    for k in range(len(imgs)):
+        for i in range(imgs[k].shape[0]):
+            for j in range(imgs[k].shape[1]):
+                if(backPlots[k][i,j]==0):
+                    backPlots[k][i,j] = imgs[k][i,j]
+
+    return deepcopy(backPlots)
+
+
 # create backplot window
