@@ -3,6 +3,11 @@ from skimage.feature import match_template
 from copy import deepcopy
 from .import forwardPass
 
+import plotly.express as px
+import plotly
+
+import matplotlib.pyplot as plt
+
 def tempfuncname(radius, imgs, templates, maxNumberInClass, minNumberInClass):
 
     maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, imgs, templates)
@@ -37,7 +42,7 @@ def classifyTemplates(radius, imgs, templates):
             if firstrun:
                 firstrun=False
                 maxresultindex=np.zeros(resultshape)
-                maxresult=np.zeros(resultshape)    
+                maxresult=np.zeros(resultshape)  
             maxresultindex[result>maxresult]=j
             maxresult[result>maxresult]=result[result>maxresult]
     
@@ -45,11 +50,24 @@ def classifyTemplates(radius, imgs, templates):
         idx = (-maxresult.flatten()).argsort()
         idxd=np.unravel_index(idx,result.shape)
         goodlist=[]
+        # isCovered = np.zeros(imgs[i].shape)+100
         for myk in range(len(idx)):
             if  (maxresult[idxd[0][myk],idxd[1][myk]]>0):
                 maxresult[max(0,idxd[0][myk]-minradius):min(maxresult.shape[0],idxd[0][myk]+minradius),
                             max(0,idxd[1][myk]-minradius):min(maxresult.shape[1],idxd[1][myk]+minradius)]=0
                 goodlist.append(myk)
+                # isCovered[max(0,idxd[0][myk]):min(maxresult.shape[0],idxd[0][myk]+2*radius),
+                #             max(0,idxd[1][myk]):min(maxresult.shape[1],idxd[1][myk]+2*radius)]=0
+
+        # xx = (-isCovered.flatten()).argsort()
+        # xxd= np.unravel_index(xx,isCovered.shape)
+        # for myk in range(len(xxd)):
+        #     if  (isCovered[idxd[0][myk],idxd[1][myk]]>0):
+        #         isCovered[max(0,idxd[0][myk]-minradius):min(maxresult.shape[0],idxd[0][myk]+minradius),
+        #                     max(0,idxd[1][myk]-minradius):min(maxresult.shape[1],idxd[1][myk]+minradius)]=0
+        #         goodlist.append(myk)
+        #         isCovered[max(0,idxd[0][myk]):min(maxresult.shape[0],idxd[0][myk]+2*radius),
+        #                     max(0,idxd[1][myk]):min(maxresult.shape[1],idxd[1][myk]+2*radius)]=0
 
         idxdnew=np.zeros((2, len(goodlist)), dtype=int)
         n=0
@@ -155,8 +173,11 @@ def backplotImg(radius, imgs, templates):
     mymax=[]
     for i in range(len(imgs)):
         imgBackplots.append(overlay[i]/ ( overlayCount[i] + (np.double(overlayCount[i]==0))  ) ) 
-        mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
-        mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
+        try:
+            mymin.append(np.min(imgBackplots[i][imgBackplots[i]>np.min(imgBackplots[i][imgBackplots[i]>0])]))
+            mymax.append(np.max(imgBackplots[i][imgBackplots[i]>0]))
+        except:
+            print("Error occured")
 
     templateMatchingResults = {
         "maxresultindices": deepcopy(maxresultindices),

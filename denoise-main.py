@@ -103,6 +103,23 @@ def main():
     print(f'Time for sort : {sort_end - sort_start} seconds!')
 
     if analyze:
+
+        for i in range(len(imgs)):
+            plt.figure(figsize=(2*15, 2*7)) 
+            ax1=plt.subplot(1,2,1)                    
+            ax1.imshow(imgs[i],cmap=plt.cm.gray)
+            ax1.set_title('original image')
+            ax1.axis('off')
+            ax2=plt.subplot(1,2,2)                    
+            ax2.imshow(backplot[i],cmap=plt.cm.gray)
+            ax2.set_title('backplot')
+            ax2.axis('off')
+            #plt.figure(figsize=(15, 12))  
+            #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
+            #plt.colorbar()
+            plt.show()
+
+
         templateClassesMap = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
         i=1
         for pic in picDic:
@@ -131,12 +148,12 @@ def main():
 
     backplot_start = time()
     backplotFinal, min, max, overlayVariance = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    
-    # backplotFinal = helperfuncs.adjustEdges(backplotFinal, imgs)
+    backplotFinal = helperfuncs.adjustEdges(backplotFinal, imgs)
     backplot_end = time()
     print(f'Time for backplotting-2 : {backplot_end - backplot_start} seconds!')
 
     if analyze:
-        fig = px.imshow(np.sqrt(overlayVariance[0]))
+        fig = px.imshow(np.sqrt(overlayVariance[0][radius:-radius,radius:-radius]))
         plotly.offline.plot(fig, filename='./charts/'+imgName+'-overlayVariance.html')
 
         fig = px.imshow(backplotFinal[0][radius:-radius,radius:-radius])
@@ -153,23 +170,23 @@ def main():
             ax1.axis('off')
             ax2=plt.subplot(1,2,2)                    
             ax2.imshow(backplotFinal[i],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
-            ax2.set_title('backplot')
+            ax2.set_title('Denoised Image')
             ax2.axis('off')
             #plt.figure(figsize=(15, 12))  
             #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
             #plt.colorbar()
-            # plt.show()
+            plt.show()
          
         plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/parallel-stack-'+imgName+'-denoised.png')    
 
         for i in range(len(imgs)):
             plt.figure(figsize=(20,20))
-            img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(imgs[i][radius:-radius,radius:-radius]))))
+            img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(imgs[i]))))
             ax1=plt.subplot(1,2,1)
             ax1.imshow(img,cmap='gray')
             ax1.axis('off')
             ax1.set_title('FFT of original image')
-            img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(backplotFinal[i][radius:-radius,radius:-radius]))))
+            img = np.log(np.abs(np.fft.fftshift(np.fft.fft2(backplotFinal[i]))))
             ax1=plt.subplot(1,2,2)
             ax1.imshow(img,cmap='gray')
             ax1.axis('off')
