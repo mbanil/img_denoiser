@@ -22,12 +22,13 @@ def main():
     # folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-4/NMC111_delith_15000000X_ABF_stack2/' # Maxime/' #sample 2/'
     folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/'
     # imgName = 'NMC111_delith_15000000X_ABF_stack2.dm3'
+    # imgName = 'STEM HAADF-DF4-BF 432.2 kx 1137.emd'
     imgName = '18_04_27_Thomas_28618_0017.dm3'
     # imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
     rerun = 15
     radius = 23
     clusteringFactor = 2.71
-    analyze = True
+    analyze = False
 
     start = time()
 
@@ -95,7 +96,7 @@ def main():
         backplot, min, max, templateMatchingResults = classify_conv.backplotImg(radius, imgs, templates)
         
     classify_end = time()
-    print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
+    print(f'Time for generating extra templates and classifying {(rerun_-rerun)} times: {classify_end - classsify_start} seconds!')
     
     sort_start = time()
     picDic = cluster.sortTemplates(imgs, templateMatchingResults, radius, templates)

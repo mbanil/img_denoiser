@@ -3,11 +3,6 @@ from skimage.feature import match_template
 from copy import deepcopy
 from .import forwardPass
 
-import plotly.express as px
-import plotly
-
-import matplotlib.pyplot as plt
-
 def tempfuncname(radius, imgs, templates, maxNumberInClass, minNumberInClass):
 
     maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, imgs, templates)
@@ -31,7 +26,7 @@ def classifyTemplates(radius, imgs, templates):
         firstrun=True
 
         convResult = convResults[i,:,:,:]
-        convImg = np.sum(imgs[0]*imgs[0])
+        convImg = np.sum(imgs[i]*imgs[i])
 
         for j in range(convResult.shape[0]):
             convTemplate = np.sum(templates[j]*templates[j])

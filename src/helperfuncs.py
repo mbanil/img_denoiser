@@ -21,9 +21,8 @@ def loadData(folderPath, fileName):
             data = []
             for channel in dm3Data:
                 data.append(np.float64(channel.data))
-                break
             data = np.stack(data, axis=2)
-            imgs.append(data[:,:,0])
+            imgs.append(data)
         else:
             imgs.append(np.float64(dm3Data.data))
             if len(imgs[0].shape)>2:
