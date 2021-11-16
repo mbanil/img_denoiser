@@ -28,7 +28,7 @@ def main():
     rerun = 15
     radius = 23
     clusteringFactor = 2.71
-    analyze = False
+    analyze = True
 
     start = time()
 
@@ -176,7 +176,8 @@ def main():
             #plt.figure(figsize=(15, 12))  
             #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
             #plt.colorbar()
-            plt.show()
+
+        plt.show()
          
         plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/parallel-stack-'+imgName+'-denoised.png')    
 
@@ -192,7 +193,8 @@ def main():
             ax1.imshow(img,cmap='gray')
             ax1.axis('off')
             ax1.set_title('FFT of denoised image in')
-            plt.show()
+            
+        plt.show()
 
     with h5py.File('results/'+imgName+'.h5', 'w') as hf:
         hf.create_dataset(imgName,  data=backplotFinal)

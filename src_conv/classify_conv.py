@@ -26,11 +26,11 @@ def classifyTemplates(radius, imgs, templates):
         firstrun=True
 
         convResult = convResults[i,:,:,:]
-        convImg = np.sum(imgs[i]*imgs[i])
+        # convImg = np.sum(imgs[i]*imgs[i])
 
         for j in range(convResult.shape[0]):
-            convTemplate = np.sum(templates[j]*templates[j])
-            convResult[j,:,:] /= np.sqrt(convImg*convTemplate)
+            # convTemplate = np.sum(templates[j]*templates[j])
+            # convResult[j,:,:] /= np.sqrt(convImg*convTemplate)
             result = convResult[j,:,:]
             resultshape=result.shape
             # changes here required if using multimode
@@ -147,6 +147,8 @@ def backplotImg(radius, imgs, templates):
     y = np.linspace(0, 1,  backplotwindow.shape[1])
     xv, yv = np.meshgrid(x, y, sparse=True)
     backplotwindow=np.exp(-((4*np.maximum(0,(xv-0.5))**2-0.1)+(4*np.maximum(0,(yv-0.5))**2-0.1)))
+    if(len(imgs[0].shape)>2):
+        backplotwindow = np.repeat(backplotwindow[..., None],imgs[0].shape[2],axis=2)
     
     # the back plotting
     n=0
