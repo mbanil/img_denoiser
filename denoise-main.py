@@ -20,10 +20,10 @@ from src import cluster
 def main():
 
     # folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-4/NMC111_delith_15000000X_ABF_stack2/' # Maxime/' #sample 2/'
-    folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/'
+    folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/'
     # imgName = 'NMC111_delith_15000000X_ABF_stack2.dm3'
-    # imgName = 'STEM HAADF-DF4-BF 432.2 kx 1137.emd'
-    imgName = '18_04_27_Thomas_28618_0017.dm3'
+    imgName = 'STEM HAADF-DF4-BF 432.2 kx 1137.emd'
+    # imgName = '18_04_27_Thomas_28618_0017.dm3'
     # imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
     rerun = 15
     radius = 23
@@ -47,6 +47,7 @@ def main():
         rand_X = randint(lower_limit,upper_limit)
         startPosList.append([rand_X, randint(0,imgs[0].shape[1]-2*radius)])
 
+    print(startPosList)
     MinNumberInClass=4
     MaxNumberInClass=100*int(np.ceil(np.sqrt(len(imgs))))
 
@@ -193,7 +194,7 @@ def main():
             ax1.imshow(img,cmap='gray')
             ax1.axis('off')
             ax1.set_title('FFT of denoised image in')
-            
+
         plt.show()
 
     with h5py.File('results/'+imgName+'.h5', 'w') as hf:

@@ -58,9 +58,13 @@
 #     model.fit(x, y, epochs=10)
 
     
+from copy import deepcopy
 import numpy as np
 import torch
 import torch.nn.functional as F
+
+# import plotly.express as px
+# import plotly
 
 def build_model(imgs,templates):
 
@@ -71,8 +75,13 @@ def build_model(imgs,templates):
     else:
         device = torch.device("cpu")
 
+    template_old = deepcopy(templates)
     for template in templates:
-        template -= np.mean(template)
+        if(len(template.shape)==3):
+            for i in range(template.shape[2]):
+                template[:,:,i] -= np.mean(template[:,:,i])
+        else:
+            template -= np.mean(template)
 
     templates_arr = np.array(templates) 
     imgs_arr = np.array(imgs)
@@ -104,12 +113,28 @@ def build_model(imgs,templates):
         
     ouput_result = np.stack(ouput_result)
 
+    # convResult = ouput_result[0,0,:,:,:]
+    # convImg = np.sum(imgs[0][:,:]*imgs[0][:,:])
+
+
+
+    # for j in range(convResult.shape[0]):
+    #     convTemplate = np.sum(template_old[j][:,:]*template_old[j][:,:])
+    #     convResult[j,:,:] /= np.sqrt(convImg*convTemplate)
+    #     result = convResult[j,:,:]
+    #     # resultshape=result.shape
+    #     fig = px.imshow(result)
+    #     plotly.offline.plot(fig, filename='./charts/normalized_result.html')
+
     # if(len(ouput_result.shape)==4):
     #     ouput_result = ouput_result[np.newaxis,...]
 
     normalized_result = normalize(ouput_result, imgs_arr, templates_arr)
 
     normalized_result = np.sum(normalized_result, axis=0)/normalized_result.shape[0]
+
+    # fig = px.imshow(normalized_result[0,0,:,:])
+    # plotly.offline.plot(fig, filename='./charts/normalized_result.html')
 
     return normalized_result
 
