@@ -21,9 +21,8 @@ def loadData(folderPath, fileName):
             data = []
             for channel in dm3Data:
                 data.append(np.float64(channel.data))
-                break
             data = np.stack(data, axis=2)
-            imgs.append(data[:,:,0])
+            imgs.append(data)
         else:
             imgs.append(np.float64(dm3Data.data))
             if len(imgs[0].shape)>2:
@@ -32,6 +31,7 @@ def loadData(folderPath, fileName):
         print('ERROR: filetyp not supported! Please contact me.')
 
     return imgs
+
 
 def generateTemplates(startPosList, imgs, radius):
     templates=[]
@@ -79,5 +79,16 @@ def findDissimilarTemplates(templates, imgs, radius, minTemplateClasses):
         best+=1
     
     return templates
+
+
+def adjustEdges(backPlots, imgs):
+    for k in range(len(imgs)):
+        for i in range(imgs[k].shape[0]):
+            for j in range(imgs[k].shape[1]):
+                if(backPlots[k][i,j]==0):
+                    backPlots[k][i,j] = imgs[k][i,j]
+
+    return deepcopy(backPlots)
+
 
 # create backplot window
