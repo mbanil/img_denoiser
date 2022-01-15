@@ -32,6 +32,7 @@ def loadData(folderPath, fileName):
 
     return imgs
 
+
 def generateTemplates(startPosList, imgs, radius):
     templates=[]
 
@@ -78,6 +79,7 @@ def findDissimilarTemplates(templates, imgs, radius, minTemplateClasses):
         best+=1
     
     return templates
+
 
 def adjustEdges(backPlots, imgs):
     for k in range(len(imgs)):

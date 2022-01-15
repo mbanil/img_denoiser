@@ -3,6 +3,8 @@ import numpy as np
 from scipy.cluster.hierarchy import dendrogram, linkage  
 from scipy.cluster.hierarchy import fcluster
 
+import matplotlib.pyplot as plt
+
 # import plotly.express as px
 # import plotly
 
@@ -78,6 +80,15 @@ def cluster(radius, templates, picDic, improvSNR):
         # mycriterion='maxclust'
         # improvSNR=2.71
         numberofClusters=np.int(np.ceil((templateCount /(improvSNR**2))))
+
+        # plt.figure(figsize=(10, 7))
+        # dendrogram(linked,  
+        #             orientation='top',
+        #             distance_sort='descending',
+        #             show_leaf_counts=True)
+
+        # plt.title("Clustering of temlapet: "+str(jt))
+        # plt.show()
 
         clusters_=fcluster(linked,  numberofClusters, criterion='maxclust')
 
