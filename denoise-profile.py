@@ -38,24 +38,7 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
 
     NumMainclasses=4
     MinNumberInClass=4
-    # MaxNumberInClass=100*int(np.ceil(np.sqrt(len(imgs))))
     MaxNumberInClass=100
-
-
-    # n1_max=1
-    # n1=0
-    # n2_max=len(imgs)
-    # n2=0
-    # plt.figure(figsize=(20, 20*n2_max/n1_max)) 
-    # for img in imgs:
-    #     n2+=1    
-    #     vstd=np.std(img)
-    #     vmean=np.mean(img)         
-    #     ax1=plt.subplot(n2_max,n1_max,n1*n2_max+n2)
-    #     ax1.imshow(img,cmap='gray',vmin=np.min(img),vmax=np.max(img))
-    #     ax1.axis('off')
-
-    # plt.show()
 
     
     gen_start = time()
@@ -89,63 +72,15 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
     sort_end = time()
     print(f'Time for sort : {sort_end - sort_start} seconds!')
 
-    templateClassesMap = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
-    i=1
-    for pic in picDic:
-        for p in pic:
-            templateClassesMap[p["xIndex"]:p["xIndex"]+10,p["yIndex"]:p["yIndex"]+10]=i
-        i+=1
-    fig = px.imshow(templateClassesMap, color_continuous_scale=px.colors.qualitative.Alphabet)
-    plotly.offline.plot(fig, filename='./charts/'+imgName+'-templateClasses.html')
-
     cluster_start = time()
     centroidDic = cluster.cluster(radius, templates, picDic, 2.71)
     cluster_end = time()
     print(f'Time for clustering : {cluster_end - cluster_start} seconds!')
 
-    noOfPatchesPerPixel = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
-    # varianceApproxMap = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
-    for i in range(len(centroidDic)):
-        for centroid in centroidDic[i]:
-            ids = centroid["id"]
-            # varianceApprox = np.zeros((2*radius,2*radius))
-            for id in ids:
-                pos = picDic[i][id]
-                # varianceApprox += (pos["template"]-centroid["centroid"])**2
-                noOfPatchesPerPixel[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=len(ids)
-            # varianceApprox /= len(ids)
-
-            # fig = px.imshow(varianceApprox)
-            # plotly.offline.plot(fig, filename='./charts/'+imgName+'-varianceApprox.html')
-
-            # fig = px.imshow(centroid["centroid"])
-            # plotly.offline.plot(fig, filename='./charts/'+imgName+'-centroid.html')
-
-
-            # for id in ids:
-            #     pos = picDic[i][id]
-            #     varianceApproxMap[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=variance
-
-
-    fig = px.imshow(noOfPatchesPerPixel)
-    plotly.offline.plot(fig, filename='./charts/'+imgName+'-noOfPatcherPerPixel.html')
-
-    # fig = px.imshow(varianceApproxMap)
-    # plotly.offline.plot(fig, filename='./charts/'+imgName+'-varianceApproxMap.html')
-
     backplot_start = time()
     backplotFinal, min, max, overlayVariance = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    
     backplot_end = time()
     print(f'Time for backplotting-2 : {backplot_end - backplot_start} seconds!')
-
-    fig = px.imshow(np.sqrt(overlayVariance[0][radius:-radius,radius:-radius]))
-    plotly.offline.plot(fig, filename='./charts/'+imgName+'-overlayVariance.html')
-
-    fig = px.imshow(backplotFinal[0][radius:-radius,radius:-radius])
-    plotly.offline.plot(fig, filename='./charts/'+imgName+'-backplotFinal.html')
-
-    fig = px.imshow((backplotFinal[0][radius:-radius,radius:-radius] - imgs[0][radius:-radius,radius:-radius])**2)
-    plotly.offline.plot(fig, filename='./charts/'+imgName+'-diff.html')
 
     for i in range(len(imgs)):
         plt.figure(figsize=(2*15, 2*7))
