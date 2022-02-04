@@ -29,8 +29,8 @@ def createTemplates(imgs, stride, templateSize, templatesPath):
                 temp = img[i:i+templateSize, j:j+templateSize]
                 allTemplates.append((temp))
     
-    with open(templatesPath, 'wb') as f:
-        pickle.dump(allTemplates, f)
+    # with open(templatesPath, 'wb') as f:
+    #     pickle.dump(allTemplates, f)
 
     return allTemplates
 
