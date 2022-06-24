@@ -9,28 +9,29 @@ import plotly.express as px
 
 from src import helperfuncs
 # from src import classify
-from convTemplMatch import classify
+from src_conv import classify_conv as classify
 from src import cluster
+from src_conv import forwardPass
 
-from convTemplMatch import forwardPass
+from skimage.feature import match_template
 
 
 
-folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/' # Maxime/' #sample 2/'
-# folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' 
-# imgName = '18_04_27_Thomas_28618_0017.dm3'
-imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
+# folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-2/' # Maxime/' #sample 2/'
+folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/' 
+imgName = '18_04_27_Thomas_28618_0017.dm3'
+# imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
 
 
 def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
 
     start = time()
 
-    # startPosList= [[25,150],[75,250]]
+    startPosList= [[50,250]]
 
     radius= templateSize
 
-    startPosList= [[84-radius,104-radius],[97-radius,204-radius],[88-radius,154-radius]]
+    # startPosList= [[84-radius,104-radius],[97-radius,204-radius],[88-radius,154-radius]]
 
 
     load_start = time()
@@ -76,21 +77,23 @@ def denoise(folderPath, imgName, rerun = 15, templateSize = 23):
     # plt.show()
     
     # templates = helperfuncs.findDissimilarTemplates(templates = templates, imgs = imgs, radius = templateSize, minTemplateClasses = NumMainclasses)
-    gen_end = time()
-    print(f'Time for generating basic templates: {gen_end - gen_start} seconds!')
+    # gen_end = time()
+    # print(f'Time for generating basic templates: {gen_end - gen_start} seconds!')
 
-    rerun_ = rerun
-    classsify_start = time()
-    while rerun>0:
-        templates = classify.tempfuncname(radius=templateSize, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
-        rerun-=1
-    classify_end = time()
-    print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
+    # rerun_ = rerun
+    # classsify_start = time()
+    # while rerun>0:
+    #     templates = classify.tempfuncname(radius=templateSize, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
+    #     rerun-=1
+    # classify_end = time()
+    # print(f'Time for generating extra templates and classifying {rerun_} times: {classify_end - classsify_start} seconds!')
 
     # result = forwardPass.build_model(imgs, templates)
 
-    # fig = px.imshow(result[0,0,:,:])
-    # plotly.offline.plot(fig, filename='./'+imgName+'-conv.html')
+    result = match_template(imgs[0], templates[0])
+
+    fig = px.imshow(result)
+    plotly.offline.plot(fig, filename='./'+imgName+'-conv.html')
 
     # firstImg = result[0,1,:,:]
 

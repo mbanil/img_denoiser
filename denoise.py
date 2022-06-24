@@ -99,7 +99,7 @@ def denoise(folderPath, imgName, rerun = 15, radius=23):
     plotly.offline.plot(fig, filename='./charts/'+imgName+'-templateClasses.html')
 
     cluster_start = time()
-    centroidDic = cluster.cluster(radius, templates, picDic)
+    centroidDic = cluster.cluster(radius, templates, picDic, 2.71)
     cluster_end = time()
     print(f'Time for clustering : {cluster_end - cluster_start} seconds!')
 

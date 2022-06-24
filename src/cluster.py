@@ -3,6 +3,8 @@ import numpy as np
 from scipy.cluster.hierarchy import dendrogram, linkage  
 from scipy.cluster.hierarchy import fcluster
 
+import matplotlib.pyplot as plt
+
 # import plotly.express as px
 # import plotly
 
@@ -47,13 +49,15 @@ def sortTemplates(imgs, templateMatchingResults, radius, templates):
 
 
 
-def cluster(radius, templates, picDic):
+def cluster(radius, templates, picDic, improvSNR):
     # generating a smooth transistion map:
     backplotwindow=np.zeros((2*radius,2*radius))
     x = np.linspace(0, 1, backplotwindow.shape[0])
     y = np.linspace(0, 1,  backplotwindow.shape[1])
     xv, yv = np.meshgrid(x, y, sparse=True)
     backplotwindow=np.exp(-((4*np.maximum(0,(xv-0.5))**2-0.1)+(4*np.maximum(0,(yv-0.5))**2-0.1)))
+    if(len(templates[0].shape)>2):
+        backplotwindow = np.repeat(backplotwindow[..., None],templates[0].shape[2],axis=2)
 
     centroidDic=[]
     for jt in range(len(templates)):
@@ -62,6 +66,8 @@ def cluster(radius, templates, picDic):
 
         templateCount = len(picDic[jt])
         templateShape_reshaped = int(picDic[jt][0]["template"].shape[0]*picDic[jt][0]["template"].shape[1])
+        if(len(templates[0].shape)>2):
+            templateShape_reshaped = int(picDic[jt][0]["template"].shape[0]*picDic[jt][0]["template"].shape[1]*picDic[jt][0]["template"].shape[2])
         templateShape = picDic[jt][0]["template"].shape
 
         temp=np.zeros((templateCount,templateShape_reshaped))
@@ -72,15 +78,25 @@ def cluster(radius, templates, picDic):
 
 
         # mycriterion='maxclust'
-        # improvSNR=1.5
-        improvSNR=2.71
-        # improvSNR=1.5
+        # improvSNR=2.71
         numberofClusters=np.int(np.ceil((templateCount /(improvSNR**2))))
+
+        # plt.figure(figsize=(10, 7))
+        # dendrogram(linked,  
+        #             orientation='top',
+        #             distance_sort='descending',
+        #             show_leaf_counts=True)
+
+        # plt.title("Clustering of temlapet: "+str(jt))
+        # plt.show()
 
         clusters_=fcluster(linked,  numberofClusters, criterion='maxclust')
 
         centroid=[None]*numberofClusters
-        variance= [np.zeros((2*radius,2*radius)) for i in range(numberofClusters)] 
+        if(len(templates[0].shape)>2):
+            variance= [np.zeros((2*radius,2*radius,templates[0].shape[2])) for i in range(numberofClusters)] 
+        else:
+            variance= [np.zeros((2*radius,2*radius)) for i in range(numberofClusters)] 
         centroidCounter=[0]*numberofClusters
         clusterList = [None]*numberofClusters
 
@@ -131,9 +147,11 @@ def backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults):
     y = np.linspace(0, 1,  backplotwindow.shape[1])
     xv, yv = np.meshgrid(x, y, sparse=True)
     backplotwindow=np.exp(-((4*np.maximum(0,(xv-0.5))**2-0.1)+(4*np.maximum(0,(yv-0.5))**2-0.1)))   
+    if(len(imgs[0].shape)>2):
+        backplotwindow = np.repeat(backplotwindow[..., None],imgs[0].shape[2],axis=2)
 
 
-    n=0
+    count=0
     pltminradius=3
 
 
@@ -170,10 +188,10 @@ def backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults):
 
                 # overlayclass[myindex][(x-pltminradius):(x+pltminradius),
                 #             (y-pltminradius):(y+pltminradius)]=maxresultindex[x,y]
-                n+=1    
+                count+=1    
                 #except:
                 #    pass
-    print("Used "+str(n)+"subimages")
+    print("Used "+str(count)+"subimages")
 
     imgBackplots = []
     mymin=[]

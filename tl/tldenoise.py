@@ -19,11 +19,13 @@ def buildModel():
     # Decoder
     x = layers.Conv2DTranspose(32, (3, 3), strides=2, activation="relu", padding="same")(x)
     x = layers.Conv2DTranspose(32, (3, 3), strides=2, activation="relu", padding="same")(x)
-    x = layers.Conv2D(1, (3, 3), activation="sigmoid", padding="same")(x)
+    # x = layers.Conv2D(1, (3, 3), activation="sigmoid", padding="same")(x)
+    x = layers.Conv2D(1, (3, 3), activation="relu", padding="same")(x)
+    # x = layers.Cropping2D(cropping=((22, 22), (22, 22)))(x)
 
     # Autoencoder
     autoencoder = Model(input, x)
-    autoencoder.compile(optimizer="adam", loss="binary_crossentropy")
+    autoencoder.compile(optimizer="adam", loss="mse", metrics=["mae"])
     autoencoder.summary()
 
     return autoencoder
