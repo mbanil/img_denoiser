@@ -20,7 +20,7 @@ t = np.array([0.79,1.99, 25.91,43.12,65.33,103.76,198.67,313.77])
 plt.plot(pixels, t,'-bo')
 plt.xlabel('No. of pixels')
 plt.ylabel('Time in secs')
-plt.title('Time-Complexity')
+plt.title('Run-time')
 
 plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/analyse/plot.png')    
 

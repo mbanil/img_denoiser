@@ -63,7 +63,7 @@ def main():
         if torch.cuda.is_available():
             while rerun>0:
                 templates = classify_conv.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
-                if(len(templatesCount)!=0):
+                if(len(templatesCount)>3):
                     if(templatesCount[-1]==len(templates)):
                         if(templatesCount[-1]==templatesCount[-2]):
                             break
@@ -75,7 +75,7 @@ def main():
             pool = mp.Pool(mp.cpu_count())
             while rerun>0:
                 templates = classify_parallel.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass, pool= pool)                
-                if(len(templatesCount)!=0):
+                if(len(templatesCount)>3):
                     if(templatesCount[-1]==len(templates)):
                         if(templatesCount[-1]==templatesCount[-2]):
                             break
@@ -87,7 +87,7 @@ def main():
     else:
         while rerun>0:
             templates = classify_conv.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
-            if(len(templatesCount)!=0):
+            if(len(templatesCount)>3):
                 if(templatesCount[-1]==len(templates)):
                     if(templatesCount[-1]==templatesCount[-2]):
                         break
