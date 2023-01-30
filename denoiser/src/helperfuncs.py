@@ -3,20 +3,23 @@ from skimage import io
 import hyperspy.api as hs
 import numpy as np
 from skimage.feature import match_template
+import os
 
 
 def loadData(folderPath, fileName):
     imgs = []
 
+    img_path = os.path.join(folderPath, fileName)
+
     if fileName.lower().endswith(('.png', '.jpg', '.jpeg','.tif')):
-        if len(io.imread(folderPath + fileName).shape)>2:
-            b= np.float64(io.imread(folderPath + fileName))
+        if len(io.imread(img_path).shape)>2:
+            b= np.float64(io.imread(img_path))
             for j in range(b.shape[0]):
                 imgs.append(b[j,:,:])
         else:   
-            imgs.append(np.float64(io.imread(folderPath + fileName)))
+            imgs.append(np.float64(io.imread(img_path)))
     elif fileName.lower().endswith(('.dm3','.emd')):
-        dm3Data=hs.load(folderPath + fileName)
+        dm3Data=hs.load(img_path)
         if fileName.lower().endswith(('.emd')):
             data = []
             for channel in dm3Data:

@@ -9,6 +9,8 @@ import torch
 import plotly.express as px
 import plotly
 import h5py
+from pathlib import Path
+import tifffile
 
 from src import helperfuncs
 from src_parallel import classify_parallel
@@ -18,21 +20,34 @@ from src import cluster
 
 def main():
 
-    # folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-4/NMC111_delith_15000000X_ABF_stack2/' # Maxime/' #sample 2/'
-    folderPath = 'C:/My Documents/TUD-MCL/Semester 4/Thesis/Implementation/Data/Dataset-1/'
-    # imgName = 'NMC111_delith_15000000X_ABF_stack2.dm3'
-    # imgName = 'STEM HAADF-DF4-BF 432.2 kx 1137.emd'
-    imgName = '18_04_27_Thomas_28618_0017.dm3'
-    # imgName = 'Stack_zeolite4NaAF__111_001_1-10.tif'
-    rerun = 15
-    radius = 23
-    clusteringFactor = 2.71
-    analyze = False
+    data_dict = {
+        "img_folder": "C:/dXs_datalab/Thesis/Implementation/imgs",
+        "results_dir" : "C:/dXs_datalab/Thesis/Implementation/results/",
+        "img_name" : "18_04_27_Thomas_28618_0017.dm3",
+        "reruns" : 15,
+        "template_size" : 46,
+        "clustering_factor": 2.71,
+        "termination_number": 5,
+        "analyze": True,
+        "min_num_class": 5
+    }
+
+
+    MinNumberInClass=data_dict["min_num_class"]
+
+    folder_path = Path(data_dict["img_folder"])
+    img_name = data_dict["img_name"]
+    rerun = data_dict["reruns"]
+    radius = data_dict["template_size"]//2
+    clusteringFactor = data_dict["clustering_factor"]
+    analyze = data_dict["analyze"]
+    results_dir = data_dict["results_dir"]
+    termination_number = data_dict["termination_number"]
 
     start = time()
 
     load_start = time()
-    imgs = helperfuncs.loadData(folderPath=folderPath, fileName=imgName)
+    imgs = helperfuncs.loadData(folderPath=folder_path, fileName=img_name)
     load_end = time()
     print(f'Time for loading: {load_end - load_start} seconds!')
 
@@ -48,7 +63,6 @@ def main():
 
     # startPosList= [[84-radius,404-radius],[97-radius,404-radius],[88-radius,404-radius]]
     print(startPosList)
-    MinNumberInClass=4
     MaxNumberInClass=100*int(np.ceil(np.sqrt(len(imgs))))
 
     gen_start = time()
@@ -63,7 +77,7 @@ def main():
         if torch.cuda.is_available():
             while rerun>0:
                 templates = classify_conv.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
-                if(len(templatesCount)>3):
+                if(len(templatesCount)>termination_number):
                     if(templatesCount[-1]==len(templates)):
                         if(templatesCount[-1]==templatesCount[-2]):
                             break
@@ -75,7 +89,7 @@ def main():
             pool = mp.Pool(mp.cpu_count())
             while rerun>0:
                 templates = classify_parallel.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass, pool= pool)                
-                if(len(templatesCount)>3):
+                if(len(templatesCount)>termination_number):
                     if(templatesCount[-1]==len(templates)):
                         if(templatesCount[-1]==templatesCount[-2]):
                             break
@@ -87,7 +101,7 @@ def main():
     else:
         while rerun>0:
             templates = classify_conv.tempfuncname(radius=radius, imgs=imgs, templates=templates, maxNumberInClass=MaxNumberInClass, minNumberInClass=MinNumberInClass)
-            if(len(templatesCount)>3):
+            if(len(templatesCount)>termination_number):
                 if(templatesCount[-1]==len(templates)):
                     if(templatesCount[-1]==templatesCount[-2]):
                         break
@@ -119,7 +133,7 @@ def main():
             #plt.figure(figsize=(15, 12))  
             #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
             #plt.colorbar()
-            plt.show()
+            # plt.show()
 
 
         templateClassesMap = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
@@ -129,7 +143,7 @@ def main():
                 templateClassesMap[p["xIndex"]:p["xIndex"]+10,p["yIndex"]:p["yIndex"]+10]=i
             i+=1
         fig = px.imshow(templateClassesMap, color_continuous_scale=px.colors.qualitative.Alphabet)
-        plotly.offline.plot(fig, filename='./charts/'+imgName+'-templateClasses.html')
+        plotly.offline.plot(fig, filename='./charts/'+img_name+'-templateClasses.html')
 
     cluster_start = time()
     centroidDic = cluster.cluster(radius, templates, picDic, clusteringFactor)
@@ -146,7 +160,7 @@ def main():
                     noOfPatchesPerPixel[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=len(ids)
 
         fig = px.imshow(noOfPatchesPerPixel)
-        plotly.offline.plot(fig, filename='./charts/'+imgName+'-noOfPatcherPerPixel.html')
+        plotly.offline.plot(fig, filename='./charts/'+img_name+'-noOfPatcherPerPixel.html')
 
     backplot_start = time()
     backplotFinal, min, max, overlayVariance = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    
@@ -168,20 +182,23 @@ def main():
         #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
             #plt.colorbar()
 
-    plt.show()
+    # plt.show()
 
     fig = px.imshow(np.sqrt(overlayVariance[0][radius:-radius,radius:-radius]))
-    plotly.offline.plot(fig, filename='./charts/'+imgName+'-overlayVariance.html')
+    plotly.offline.plot(fig, filename='./charts/'+img_name+'-overlayVariance.html')
 
     if analyze:
         fig = px.imshow(np.sqrt(overlayVariance[0][radius:-radius,radius:-radius]))
-        plotly.offline.plot(fig, filename='./charts/'+imgName+'-overlayVariance.html')
+        plotly.offline.plot(fig, filename='./charts/'+img_name+'-overlayVariance.html')
 
         fig = px.imshow(backplotFinal[0][radius:-radius,radius:-radius])
-        plotly.offline.plot(fig, filename='./charts/'+imgName+'-backplotFinal.html')
+        plotly.offline.plot(fig, filename='./charts/'+img_name+'-backplotFinal.html')
 
         fig = px.imshow((backplotFinal[0][radius:-radius,radius:-radius] - imgs[0][radius:-radius,radius:-radius])**2)
-        plotly.offline.plot(fig, filename='./charts/'+imgName+'-diff.html')
+        plotly.offline.plot(fig, filename='./charts/'+img_name+'-diff.html')
+
+        tifffile.imsave(results_dir + img_name + '-denoised.tiff', backplotFinal[0][radius:-radius,radius:-radius])
+        tifffile.imsave(results_dir + img_name + '.tiff', imgs[0][radius:-radius,radius:-radius])
 
         for i in range(len(imgs)):
             plt.figure(figsize=(2*15, 2*7)) 
@@ -197,9 +214,9 @@ def main():
             #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
             #plt.colorbar()
 
-        plt.show()
+        # plt.show()
          
-        plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/parallel-stack-'+imgName+'-denoised.png')    
+        # plt.savefig('C:/My Documents/TUD-MCL/Semester 4/Thesis/repo/img-denoiser/results/parallel-stack-'+img_name+'-denoised.png')    
 
         for i in range(len(imgs)):
             plt.figure(figsize=(20,20))
@@ -214,10 +231,10 @@ def main():
             ax1.axis('off')
             ax1.set_title('FFT of denoised image in')
 
-        plt.show()
+        # plt.show()
 
-    with h5py.File('results/'+imgName+'.h5', 'w') as hf:
-        hf.create_dataset(imgName,  data=backplotFinal)
+    with h5py.File('results/'+img_name+'.h5', 'w') as hf:
+        hf.create_dataset(img_name,  data=backplotFinal)
 
     end = time()
     print(f'Total time: {end - start} seconds!')
