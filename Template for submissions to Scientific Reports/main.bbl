@@ -1,0 +1,125 @@
+\begin{thebibliography}{10}
+\urlstyle{rm}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname doiprefix\endcsname\relax\def\doiprefix{DOI: }\fi
+\providecommand{\bibinfo}[2]{#2}
+\providecommand{\eprint}[2][]{\url{#2}}
+
+\bibitem{CURRY200691}
+\bibinfo{author}{Curry, A.}, \bibinfo{author}{Appleton, H.} \&
+  \bibinfo{author}{Dowsett, B.}
+\newblock \bibinfo{journal}{\bibinfo{title}{Application of transmission
+  electron microscopy to the clinical study of viral and bacterial infections:
+  Present and future}}.
+\newblock {\emph{\JournalTitle{Micron}}} \textbf{\bibinfo{volume}{37}},
+  \bibinfo{pages}{91--106},
+  \doiprefix\url{https://doi.org/10.1016/j.micron.2005.10.001}
+  (\bibinfo{year}{2006}).
+
+\bibitem{WANG2008395}
+\bibinfo{author}{Wang, Z.~L.} \& \bibinfo{author}{Lee, J.~L.}
+\newblock \bibinfo{title}{Chapter 9 - electron microscopy techniques for
+  imaging and analysis of nanoparticles}.
+\newblock In \bibinfo{editor}{Kohli, R.} \& \bibinfo{editor}{Mittal, K.} (eds.)
+  \emph{\bibinfo{booktitle}{Developments in Surface Contamination and Cleaning
+  (Second Edition)}}, \bibinfo{pages}{395--443},
+  \doiprefix\url{https://doi.org/10.1016/B978-0-323-29960-2.00009-5}
+  (\bibinfo{publisher}{William Andrew Publishing}, \bibinfo{address}{Oxford},
+  \bibinfo{year}{2008}), \bibinfo{edition}{second edition} edn.
+
+\bibitem{bcm_nlm}
+\bibinfo{author}{Buades, A.}, \bibinfo{author}{Coll, B.} \&
+  \bibinfo{author}{Morel, J.-M.}
+\newblock \bibinfo{journal}{\bibinfo{title}{{Non-Local Means Denoising}}}.
+\newblock {\emph{\JournalTitle{{Image Processing On Line}}}}
+  \textbf{\bibinfo{volume}{1}}, \bibinfo{pages}{208--212}
+  (\bibinfo{year}{2011}).
+
+\bibitem{DBLP:journals/tip/BM3D}
+\bibinfo{author}{M{\"{a}}kinen, Y.}, \bibinfo{author}{Azzari, L.} \&
+  \bibinfo{author}{Foi, A.}
+\newblock \bibinfo{journal}{\bibinfo{title}{Collaborative filtering of
+  correlated noise: Exact transform-domain variance for improved shrinkage and
+  patch matching}}.
+\newblock {\emph{\JournalTitle{{IEEE} Trans. Image Process.}}}
+  \textbf{\bibinfo{volume}{29}}, \bibinfo{pages}{8339--8354},
+  \doiprefix\url{10.1109/TIP.2020.3014721} (\bibinfo{year}{2020}).
+
+\bibitem{zhang2018ffdnet}
+\bibinfo{author}{Zhang, K.}, \bibinfo{author}{Zuo, W.} \&
+  \bibinfo{author}{Zhang, L.}
+\newblock \bibinfo{journal}{\bibinfo{title}{Ffdnet: Toward a fast and flexible
+  solution for cnn-based image denoising}}.
+\newblock {\emph{\JournalTitle{IEEE Transactions on Image Processing}}}
+  \textbf{\bibinfo{volume}{27}}, \bibinfo{pages}{4608--4622}
+  (\bibinfo{year}{2018}).
+
+\bibitem{zhang2017beyond}
+\bibinfo{author}{Zhang, K.}, \bibinfo{author}{Zuo, W.}, \bibinfo{author}{Chen,
+  Y.}, \bibinfo{author}{Meng, D.} \& \bibinfo{author}{Zhang, L.}
+\newblock \bibinfo{journal}{\bibinfo{title}{Beyond a gaussian denoiser:
+  Residual learning of deep cnn for image denoising}}.
+\newblock {\emph{\JournalTitle{IEEE transactions on image processing}}}
+  \textbf{\bibinfo{volume}{26}}, \bibinfo{pages}{3142--3155}
+  (\bibinfo{year}{2017}).
+
+\bibitem{DBLP:journals/corr/abs-1803-04189}
+\bibinfo{author}{Lehtinen, J.} \emph{et~al.}
+\newblock \bibinfo{journal}{\bibinfo{title}{Noise2noise: Learning image
+  restoration without clean data}}.
+\newblock {\emph{\JournalTitle{CoRR}}}
+  \textbf{\bibinfo{volume}{abs/1803.04189}} (\bibinfo{year}{2018}).
+\newblock \eprint{1803.04189}.
+
+\bibitem{krull2019noise2void}
+\bibinfo{author}{Krull, A.}, \bibinfo{author}{Buchholz, T.-O.} \&
+  \bibinfo{author}{Jug, F.}
+\newblock \bibinfo{title}{Noise2void-learning denoising from single noisy
+  images}.
+\newblock In \emph{\bibinfo{booktitle}{Proceedings of the IEEE Conference on
+  Computer Vision and Pattern Recognition}}, \bibinfo{pages}{2129--2137}
+  (\bibinfo{year}{2019}).
+
+\bibitem{bhushan_single_2017}
+\bibinfo{author}{Bhushan, S.}
+\newblock \bibinfo{title}{Single {Particle} {Reconstruction}}
+  (\bibinfo{year}{2017}).
+
+\bibitem{alake_understanding_2021}
+\bibinfo{author}{Alake, R.}
+\newblock \bibinfo{title}{Understanding {Cosine} {Similarity} {And} {Its}
+  {Application}} (\bibinfo{year}{2021}).
+
+\bibitem{template_matching}
+\bibinfo{author}{Lewis, J.}
+\newblock \bibinfo{journal}{\bibinfo{title}{Fast normalized
+  cross-correlation}}.
+\newblock {\emph{\JournalTitle{Ind. Light Magic}}}
+  \textbf{\bibinfo{volume}{10}} (\bibinfo{year}{2001}).
+
+\bibitem{steven_scientist_1997}
+\bibinfo{author}{Steven, W.~S.}
+\newblock \emph{\bibinfo{title}{The {Scientist} and {Engineer}'s {Guide} to
+  {Digital} {Signal} {Processing}}} (\bibinfo{publisher}{California Technical
+  Pub}, \bibinfo{year}{1997}), \bibinfo{edition}{first} edn.
+
+\bibitem{chan1982updating}
+\bibinfo{author}{Chan, T.~F.}, \bibinfo{author}{Golub, G.~H.} \&
+  \bibinfo{author}{LeVeque, R.~J.}
+\newblock \bibinfo{title}{Updating formulae and a pairwise algorithm for
+  computing sample variances}.
+\newblock In \emph{\bibinfo{booktitle}{COMPSTAT 1982 5th Symposium held at
+  Toulouse 1982}}, \bibinfo{pages}{30--41} (\bibinfo{organization}{Springer},
+  \bibinfo{year}{1982}).
+
+\bibitem{Hao:gidmaps:2014}
+\bibinfo{author}{Hao, Z.}, \bibinfo{author}{AghaKouchak, A.},
+  \bibinfo{author}{Nakhjiri, N.} \& \bibinfo{author}{Farahmand, A.}
+\newblock \bibinfo{title}{Global integrated drought monitoring and prediction
+  system ({GIDMaPS}) data sets}.
+\newblock \bibinfo{howpublished}{\emph{figshare}
+  \url{http://dx.doi.org/10.6084/m9.figshare.853801}} (\bibinfo{year}{2014}).
+
+\end{thebibliography}
