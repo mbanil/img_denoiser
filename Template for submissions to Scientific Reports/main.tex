@@ -3,6 +3,10 @@
 \usepackage[T1]{fontenc}
 \usepackage{algorithm,algpseudocode}
 \usepackage{mathtools}
+\usepackage{epstopdf}
+\epstopdfDeclareGraphicsRule{.tif}{png}{.png}{%
+	convert #1 \OutputFile         
+}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil} 
 \title{Pattern matching based denoising for images with repeated sub strucutures.}
 
@@ -168,39 +172,44 @@ The following are the algorithm parameters.
 
 \section*{Results}
 
-The proposed algorithm is mainly developed to denoise TEM images with repeated structure. An example of such an image and it's denoised result can be seen in figure \ref{fig:denoised_result-1}. For our experiments, a patch size of 46*46, a group size was between 4 and 100, and the clustering parameter $c$ equal to 2.7 were used.
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.1]{./imgs/comparison.jpg}
+	\caption{Comparison of results obtained from different methods}
+	\label{fig:comparison}
+\end{figure}
 
-Peak Signal-to-Noise Ratio (PSNR) and Structural Similarity Index Measure (SSIM) are commonly used to measure the quality of image denoising. Both of these techniques required an original noise-free image to calculate the quality of denoising. Since an original noise-free image is not present for the experimental data used, Fast Fourier Transform (FFT)\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.fft.fft2.html}} of the image is used to examine the quality of denoising. 
 
-The FFT converts data from the spatial domain into the frequency domain. The white structures in the FFT represent the information in the images. The signal corresponding to the low frequency components are represented at the center of the FFT and higher frequency components are present as we move away from the center. Noise corresponds to the high frequency components of the FFT and is present close to the edges. 
+The proposed algorithm is mainly developed to denoise TEM images having repeated structures. The noisy image, the results from all the methods and their Fast Fourier transforms (FFT)\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.fft.fft2.html}} can be seen in figure \ref{fig:comparison}. The FFT converts data from the spatial domain into the frequency domain. The white structures in the FFT represent information in the images. The signal corresponding to the low frequency components are represented at the center of the FFT and higher frequency components are present as we move away from the center. Noise corresponds to the high frequency components of the FFT and is present close to the edges. A
 
-Figure \ref{fig:comparison} shows a comparison of different results. Noisy image, it's FFT, denoised images from different methods and their FFT's can be seen.
+The following can be concluded from the figure \ref{fig:comparison}:
+\begin{itemize}
+	\item The noisy image contains a lot of grainy structures which makes it hard to interpret the information. This is also reflected in the FFT, where the white structures are faintly visible at the center.
+	
+	\item The results from a self-supervised deep learning method, N2V\cite{krull2019noise2void} show decent results in reconstructing the circular structures and removing the noise in the black region of the image. However, the substructures have not been reconstructed well which can be seen in the zoomed in sections. The FFT shows the enhanced white structures at the center and the edges mostly look dark representing the suppression of noise. 
+	
+	\item The results from BM3D \cite{DBLP:journals/tip/BM3D} are similar to that obtained from N2V. The denoising effect is visible but the images are still not very useful for further analysis. This is also supported by the Fourier transform.
+	
+	\item 
+\end{itemize}
+
+
+For our experiments, a patch size of 46*46, a group size was between 4 and 100, and the clustering parameter $c$ equal to 2.7 were used.
+
+
 
 \subsection*{Comparison of results}
 
 \label{sec:comparison}
 
-\begin{figure}
-	\centering
-	\includegraphics[scale=1.1]{./imgs/comparison-1.png}
-	\caption{Comparison of results obtained from different methods}
-	\label{fig:comparison}
-\end{figure}
 
-The noisy image, the results from all the methods and their Fourier transforms can be seen in figure \ref{fig:comparison}. The result from the generic autoencoder looks a bit noisy even though the circular structures are prominently visible than it's noisier counterpart. The substructures between the circular structures are not visible. The black region also looks noisy. The Fourier transform supports this argument as there isn't any remarkable enhancement in the white structures at the center. The edges appear bright which can be attributed to the noise still existing or additionally added by the denoising process.
-
-
-
-N2V does a good job in reconstructing the circular structures and removing the noise in the black region. However, the substructures have not been reconstructed well. The Fourier transform shows that the enhancement of white structures at the center. The edges mostly look dark thus representing the suppression of noise. 
-
-BM3D does a slightly better job than N2V. This is also supported by the Fourier transform. However the substructures are not reconstructed well. 
 
 Non-Local Self-Similarity based denoising has produced the best result among the methods that have been tested on the experimental data. This method does a good job in reconstructing most of the structures from the noisy image. The Fourier transform also shows enhancement in the white structures which is the most compared to those from the other methods. Upon observing the result in figure \ref{fig:denoised_result-1_1}, the substructures between the circular structures can also be seen. 
 
 
 \begin{figure}
 	\centering
-	\includegraphics[scale=0.5]{./imgs/denoised_result-1.png}
+	\includegraphics[scale=0.1]{./imgs/denoised_result-1.png}
 	\caption[Non-Local Self-Similarity based image denoising result]{Noisy input and it's corresponding denoised result}
 	\label{fig:denoised_result-1}
 \end{figure}
@@ -212,7 +221,7 @@ Non-Local Self-Similarity based denoising has produced the best result among the
 	\label{fig:denoised_result_fft-1}
 \end{figure}
 
-Peak Signal-to-Noise Ratio (PSNR) and Structural Similarity Index Measure (SSIM) are popularly used to measure the quality of image denoising. Both of these techniques required an original noise-free image to calculate the quality of denoising. Since an original noise-free image is not present for the experimental data used, Fast Fourier Transform (FFT)\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.fft.fft2.html}} of the image is used to examine the quality of denoising. 
+Peak Signal-to-Noise Ratio (PSNR) and Structural Similarity Index Measure (SSIM) are popularly used to measure the quality of image denoising. Both of these techniques required an original noise-free image to calculate the quality of denoising. Since an original noise-free image is not present for the experimental data used, Fast Fourier Transform  of the image is used to examine the quality of denoising. 
 
 
 
