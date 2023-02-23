@@ -18,22 +18,24 @@ from src_conv import classify_conv
 from src import classify
 from src import cluster
 
-def main():
+def denoiser():
 
     data_dict = {
-        "img_folder": "C:/dXs_datalab/Thesis/Implementation/imgs",
-        "results_dir" : "C:/dXs_datalab/Thesis/Implementation/results/",
-        "img_name" : "18_04_27_Thomas_28618_0017.dm3",
+        "img_folder": 'C:/Users/Anil Kumar/Downloads/paper_img/',
+        "results_dir" : "C:/Users/Anil Kumar/Downloads/paper_img/",
+        "img_name" : "paper_img.tiff",
         "reruns" : 15,
-        "template_size" : 46,
-        "clustering_factor": 2.71,
-        "termination_number": 5,
-        "analyze": True,
-        "min_num_class": 5
+        "template_size" : 40,
+        "clustering_factor": 4,
+        "termination_number": 3,
+        "analyze": False,
+        "min_num_class": 5,
+        "max_num_class":200
     }
 
 
     MinNumberInClass=data_dict["min_num_class"]
+    max_num_class = data_dict["max_num_class"]
 
     folder_path = Path(data_dict["img_folder"])
     img_name = data_dict["img_name"]
@@ -47,7 +49,11 @@ def main():
     start = time()
 
     load_start = time()
-    imgs = helperfuncs.loadData(folderPath=folder_path, fileName=img_name)
+    # imgs = helperfuncs.loadData(folderPath=folder_path, fileName=img_name)
+
+    imgs = tifffile.imread("C:/Users/Anil Kumar/Downloads/paper_img-2.tiff").astype(np.float32)
+
+    imgs = imgs[np.newaxis,...]
     load_end = time()
     print(f'Time for loading: {load_end - load_start} seconds!')
 
@@ -63,7 +69,7 @@ def main():
 
     # startPosList= [[84-radius,404-radius],[97-radius,404-radius],[88-radius,404-radius]]
     print(startPosList)
-    MaxNumberInClass=100*int(np.ceil(np.sqrt(len(imgs))))
+    MaxNumberInClass=max_num_class*int(np.ceil(np.sqrt(len(imgs))))
 
     gen_start = time()
     templates = helperfuncs.generateTemplates(startPosList=startPosList, imgs=imgs, radius=radius)
@@ -118,18 +124,18 @@ def main():
     sort_end = time()
     print(f'Time for sort : {sort_end - sort_start} seconds!')
 
-    if analyze:
+    if (analyze==True):
 
-        for i in range(len(imgs)):
-            plt.figure(figsize=(2*15, 2*7)) 
-            ax1=plt.subplot(1,2,1)                    
-            ax1.imshow(imgs[i],cmap=plt.cm.gray)
-            ax1.set_title('original image')
-            ax1.axis('off')
-            ax2=plt.subplot(1,2,2)                    
-            ax2.imshow(backplot[i],cmap=plt.cm.gray)
-            ax2.set_title('backplot')
-            ax2.axis('off')
+        # for i in range(len(imgs)):
+        #     plt.figure(figsize=(2*15, 2*7)) 
+        #     ax1=plt.subplot(1,2,1)                    
+        #     ax1.imshow(imgs[i],cmap=plt.cm.gray)
+        #     ax1.set_title('original image')
+        #     ax1.axis('off')
+        #     ax2=plt.subplot(1,2,2)                    
+        #     ax2.imshow(backplot[i],cmap=plt.cm.gray)
+        #     ax2.set_title('backplot')
+        #     ax2.axis('off')
             #plt.figure(figsize=(15, 12))  
             #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
             #plt.colorbar()
@@ -143,14 +149,14 @@ def main():
                 templateClassesMap[p["xIndex"]:p["xIndex"]+10,p["yIndex"]:p["yIndex"]+10]=i
             i+=1
         fig = px.imshow(templateClassesMap, color_continuous_scale=px.colors.qualitative.Alphabet)
-        plotly.offline.plot(fig, filename='./charts/'+img_name+'-templateClasses.html')
+        plotly.offline.plot(fig, filename='./charts/'+img_name.split(".")[0]+'-templateClasses.html')
 
     cluster_start = time()
     centroidDic = cluster.cluster(radius, templates, picDic, clusteringFactor)
     cluster_end = time()
     print(f'Time for clustering : {cluster_end - cluster_start} seconds!')
 
-    if analyze:
+    if (analyze==True):
         noOfPatchesPerPixel = np.zeros((imgs[0].shape[0], imgs[0].shape[1]))
         for i in range(len(centroidDic)):
             for centroid in centroidDic[i]:
@@ -160,7 +166,7 @@ def main():
                     noOfPatchesPerPixel[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=len(ids)
 
         fig = px.imshow(noOfPatchesPerPixel)
-        plotly.offline.plot(fig, filename='./charts/'+img_name+'-noOfPatcherPerPixel.html')
+        plotly.offline.plot(fig, filename='./charts/'+img_name.split(".")[0]+'-noOfPatcherPerPixel.html')
 
     backplot_start = time()
     backplotFinal, min, max, overlayVariance = cluster.backplotFinal(centroidDic, picDic, imgs, radius, templateMatchingResults)    
@@ -184,32 +190,31 @@ def main():
 
     # plt.show()
 
-    fig = px.imshow(np.sqrt(overlayVariance[0][radius:-radius,radius:-radius]))
-    plotly.offline.plot(fig, filename='./charts/'+img_name+'-overlayVariance.html')
+    tifffile.imsave(results_dir + img_name.split(".")[0] + '-denoised.tiff', backplotFinal[0][radius:-radius,radius:-radius])
 
-    if analyze:
+    if (analyze==True):
         fig = px.imshow(np.sqrt(overlayVariance[0][radius:-radius,radius:-radius]))
-        plotly.offline.plot(fig, filename='./charts/'+img_name+'-overlayVariance.html')
+        plotly.offline.plot(fig, filename='./charts/'+img_name.split(".")[0]+'-overlayVariance.html')
 
         fig = px.imshow(backplotFinal[0][radius:-radius,radius:-radius])
-        plotly.offline.plot(fig, filename='./charts/'+img_name+'-backplotFinal.html')
+        plotly.offline.plot(fig, filename='./charts/'+img_name.split(".")[0]+'-backplotFinal.html')
 
         fig = px.imshow((backplotFinal[0][radius:-radius,radius:-radius] - imgs[0][radius:-radius,radius:-radius])**2)
-        plotly.offline.plot(fig, filename='./charts/'+img_name+'-diff.html')
+        plotly.offline.plot(fig, filename='./charts/'+img_name.split(".")[0]+'-diff.html')
 
-        tifffile.imsave(results_dir + img_name + '-denoised.tiff', backplotFinal[0][radius:-radius,radius:-radius])
-        tifffile.imsave(results_dir + img_name + '.tiff', imgs[0][radius:-radius,radius:-radius])
+        tifffile.imsave(results_dir + img_name.split(".")[0] + '-denoised.tiff', backplotFinal[0][radius:-radius,radius:-radius])
+        # tifffile.imsave(results_dir + img_name + '.tiff', imgs[0][radius:-radius,radius:-radius])
 
-        for i in range(len(imgs)):
-            plt.figure(figsize=(2*15, 2*7)) 
-            ax1=plt.subplot(1,2,1)                    
-            ax1.imshow(imgs[i],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
-            ax1.set_title('original image')
-            ax1.axis('off')
-            ax2=plt.subplot(1,2,2)                    
-            ax2.imshow(backplotFinal[i],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
-            ax2.set_title('Denoised Image')
-            ax2.axis('off')
+        # for i in range(len(imgs)):
+        #     plt.figure(figsize=(2*15, 2*7)) 
+        #     ax1=plt.subplot(1,2,1)                    
+        #     ax1.imshow(imgs[i],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+        #     ax1.set_title('original image')
+        #     ax1.axis('off')
+        #     ax2=plt.subplot(1,2,2)                    
+        #     ax2.imshow(backplotFinal[i],cmap=plt.cm.gray,vmin=min[i],vmax=max[i])
+        #     ax2.set_title('Denoised Image')
+        #     ax2.axis('off')
             #plt.figure(figsize=(15, 12))  
             #plt.imshow(overlayclass[Mode][myindex],cmap=plt.cm.gist_rainbow)
             #plt.colorbar()
@@ -241,8 +246,3 @@ def main():
 
     return backplotFinal
 
-
-
-if __name__ == '__main__':
-    freeze_support()
-    main()
