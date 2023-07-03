@@ -33,16 +33,17 @@ def loadData(folderPath, fileName):
     else:
         print('ERROR: filetyp not supported! Please contact me.')
 
+
     return imgs
 
 
-def generateTemplates(startPosList, imgs, radius):
+def generateTemplates(intial_patch_locations, image, radius):
     templates=[]
 
     # templates are only taken from the first image of the imges list (since the images are similar)
-    for startPos in startPosList:
-        templates.append(deepcopy(imgs[0][startPos[0]:startPos[0]+np.int(2*radius),
-                                         startPos[1]:startPos[1]+np.int(2*radius)]))
+    for start_pos in intial_patch_locations:
+        templates.append(deepcopy(image[0,start_pos[0]:start_pos[0]+np.int(2*radius),
+                                         start_pos[1]:start_pos[1]+np.int(2*radius)]))
 
     return templates
     

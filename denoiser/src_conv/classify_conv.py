@@ -3,36 +3,34 @@ from skimage.feature import match_template
 from copy import deepcopy
 from .import forwardPass
 
-def tempfuncname(radius, imgs, templates, maxNumberInClass, minNumberInClass):
+def tempfuncname(radius, image, templates, maxNumberInClass, minNumberInClass):
 
-    maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, imgs, templates)
+    maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, image, templates)
 
-    newTemplates = generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultindices, radius, maxNumberInClass, minNumberInClass)
+    newTemplates = generateNewTemplates(templates, image, sortedIndices, maxresults, maxresultindices, radius, maxNumberInClass, minNumberInClass)
             
     return deepcopy(newTemplates)
 
 
 
-def classifyTemplates(radius, imgs, templates):
+def classifyTemplates(radius, image, templates):
 
     minradius = np.int16(radius/2)
     maxresultindices = []
     maxresults = []
     sortedIndices = []
 
-    convResults = forwardPass.build_model(imgs, templates)
+    convResults = forwardPass.build_model(image, templates)
 
     for i in range(convResults.shape[0]):
         firstrun=True
 
         convResult = convResults[i,:,:,:]
-        # convImg = np.sum(imgs[i]*imgs[i])
 
         for j in range(convResult.shape[0]):
-            # convTemplate = np.sum(templates[j]*templates[j])
-            # convResult[j,:,:] /= np.sqrt(convImg*convTemplate)
             result = convResult[j,:,:]
             resultshape=result.shape
+
             # changes here required if using multimode
             if firstrun:
                 firstrun=False
@@ -45,24 +43,11 @@ def classifyTemplates(radius, imgs, templates):
         idx = (-maxresult.flatten()).argsort()
         idxd=np.unravel_index(idx,result.shape)
         goodlist=[]
-        # isCovered = np.zeros(imgs[i].shape)+100
         for myk in range(len(idx)):
             if  (maxresult[idxd[0][myk],idxd[1][myk]]>0):
                 maxresult[max(0,idxd[0][myk]-minradius):min(maxresult.shape[0],idxd[0][myk]+minradius),
                             max(0,idxd[1][myk]-minradius):min(maxresult.shape[1],idxd[1][myk]+minradius)]=0
                 goodlist.append(myk)
-                # isCovered[max(0,idxd[0][myk]):min(maxresult.shape[0],idxd[0][myk]+2*radius),
-                #             max(0,idxd[1][myk]):min(maxresult.shape[1],idxd[1][myk]+2*radius)]=0
-
-        # xx = (-isCovered.flatten()).argsort()
-        # xxd= np.unravel_index(xx,isCovered.shape)
-        # for myk in range(len(xxd)):
-        #     if  (isCovered[idxd[0][myk],idxd[1][myk]]>0):
-        #         isCovered[max(0,idxd[0][myk]-minradius):min(maxresult.shape[0],idxd[0][myk]+minradius),
-        #                     max(0,idxd[1][myk]-minradius):min(maxresult.shape[1],idxd[1][myk]+minradius)]=0
-        #         goodlist.append(myk)
-        #         isCovered[max(0,idxd[0][myk]):min(maxresult.shape[0],idxd[0][myk]+2*radius),
-        #                     max(0,idxd[1][myk]):min(maxresult.shape[1],idxd[1][myk]+2*radius)]=0
 
         idxdnew=np.zeros((2, len(goodlist)), dtype=int)
         n=0
