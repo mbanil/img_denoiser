@@ -140,7 +140,7 @@ def denoiser(image, min_patches_per_class=5, max_patches_per_class=100, iteratio
                 templateClassesMap[p["xIndex"]:p["xIndex"]+10,p["yIndex"]:p["yIndex"]+10]=i
             i+=1
         fig = px.imshow(templateClassesMap, color_continuous_scale=px.colors.qualitative.Alphabet)
-        # plotly.offline.plot(fig, filename='./charts/'+img_name.split(".")[0]+'-templateClasses.html')
+        # plotly.offline.plot(fig, filename='./analysis/'+img_name.split(".")[0]+'-templateClasses.html')
 
     centroidDic = cluster.cluster(radius, templates, picDic, clustering_factor)
 
@@ -154,7 +154,7 @@ def denoiser(image, min_patches_per_class=5, max_patches_per_class=100, iteratio
                     noOfPatchesPerPixel[pos["xIndex"]:pos["xIndex"]+2*radius,pos["yIndex"]:pos["yIndex"]+2*radius]+=len(ids)
 
         fig = px.imshow(noOfPatchesPerPixel)
-        # plotly.offline.plot(fig, filename='./charts/'+img_name.split(".")[0]+'-noOfPatcherPerPixel.html')
+        # plotly.offline.plot(fig, filename='./analysis/'+img_name.split(".")[0]+'-noOfPatcherPerPixel.html')
 
     backplotFinal, min, max, overlayVariance = cluster.backplotFinal(centroidDic, picDic, image, radius, templateMatchingResults)    
     backplotFinal = helperfuncs.adjustEdges(backplotFinal, image)
@@ -179,13 +179,13 @@ def denoiser(image, min_patches_per_class=5, max_patches_per_class=100, iteratio
 
     if (analyze==True):
         fig = px.imshow(np.sqrt(overlayVariance[0][radius:-radius,radius:-radius]))
-        # plotly.offline.plot(fig, filename='./charts/'+img_name.split(".")[0]+'-overlayVariance.html')
+        # plotly.offline.plot(fig, filename='./analysis/'+img_name.split(".")[0]+'-overlayVariance.html')
 
         fig = px.imshow(backplotFinal[0][radius:-radius,radius:-radius])
-        # plotly.offline.plot(fig, filename='./charts/'+img_name.split(".")[0]+'-backplotFinal.html')
+        # plotly.offline.plot(fig, filename='./analysis/'+img_name.split(".")[0]+'-backplotFinal.html')
 
         fig = px.imshow((backplotFinal[0][radius:-radius,radius:-radius] - imgs[0][radius:-radius,radius:-radius])**2)
-        # plotly.offline.plot(fig, filename='./charts/'+img_name.split(".")[0]+'-diff.html')
+        # plotly.offline.plot(fig, filename='./analysis/'+img_name.split(".")[0]+'-diff.html')
 
         # tifffile.imsave(results_dir + img_name.split(".")[0] + '-denoised.tiff', backplotFinal[0][radius:-radius,radius:-radius])
         # tifffile.imsave(results_dir + img_name + '.tiff', imgs[0][radius:-radius,radius:-radius])

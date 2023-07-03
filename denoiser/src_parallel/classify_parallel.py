@@ -3,11 +3,11 @@ from skimage.feature import match_template
 from copy import deepcopy
 import multiprocessing as mp
 
-def tempfuncname(radius, imgs, templates, maxNumberInClass, minNumberInClass, pool):
+def tempfuncname(radius, image, templates, maxNumberInClass, minNumberInClass, pool):
     
-    maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, imgs, templates, pool)
+    maxresultindices, maxresults, sortedIndices = classifyTemplates(radius, image, templates, pool)
 
-    newTemplates = generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultindices, radius, maxNumberInClass, minNumberInClass)
+    newTemplates = generateNewTemplates(templates, image, sortedIndices, maxresults, maxresultindices, radius, maxNumberInClass, minNumberInClass)
             
     return deepcopy(newTemplates)
 
