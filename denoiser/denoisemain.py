@@ -12,6 +12,10 @@ import h5py
 from pathlib import Path
 import tifffile
 
+import cProfile
+import io
+import pstats
+
 from src import helperfuncs
 from src_parallel import classify_parallel
 from src_conv import classify_conv
@@ -34,6 +38,20 @@ def intialize_patches(image, radius):
             [rand_X, randint(0, image.shape[2]-2*radius)])
 
     return initial_patch_locations
+
+def run_profiler(image, min_patches_per_class=5, max_patches_per_class=100, iteration_counter=15, patch_size=48, termination_number=3, analyze=False, clustering_factor=2.7):
+
+    pr = cProfile.Profile()
+    pr.enable()
+    denoised_image  = denoiser(image, min_patches_per_class, max_patches_per_class, iteration_counter, patch_size, termination_number, analyze, clustering_factor)
+    pr.disable()
+    s = io.StringIO()
+    sortby = 'cumulative'
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    ps.print_stats("denoise")
+    print(s.getvalue())
+
+    return denoised_image
 
 
 def denoiser(image, min_patches_per_class=5, max_patches_per_class=100, iteration_counter=15, patch_size=48, termination_number=3, analyze=False, clustering_factor=2.7):
@@ -156,3 +174,5 @@ def denoiser(image, min_patches_per_class=5, max_patches_per_class=100, iteratio
 
 
     return backplotFinal
+
+
