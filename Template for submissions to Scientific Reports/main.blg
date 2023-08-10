@@ -6,45 +6,45 @@ The style file: naturemag-doi.bst
 Reallocating 'name_of_file' (item size: 1) to 7 items.
 Database file #1: sample.bib
 Warning--I didn't find a database entry for "Hao:gidmaps:2014"
-You've used 12 entries,
+You've used 11 entries,
             2380 wiz_defined-function locations,
-            1086 strings with 11777 characters,
-and the built_in function-call counts, 5318 in all, are:
-= -- 384
-> -- 132
+            1080 strings with 11605 characters,
+and the built_in function-call counts, 4774 in all, are:
+= -- 339
+> -- 124
 < -- 0
-+ -- 65
-- -- 33
-* -- 628
-:= -- 560
-add.period$ -- 36
-call.type$ -- 12
-change.case$ -- 21
++ -- 61
+- -- 31
+* -- 578
+:= -- 508
+add.period$ -- 33
+call.type$ -- 11
+change.case$ -- 18
 chr.to.int$ -- 0
-cite$ -- 12
-duplicate$ -- 453
-empty$ -- 496
-format.name$ -- 44
-if$ -- 1107
+cite$ -- 11
+duplicate$ -- 408
+empty$ -- 441
+format.name$ -- 41
+if$ -- 979
 int.to.chr$ -- 0
-int.to.str$ -- 12
-missing$ -- 104
-newline$ -- 70
-num.names$ -- 14
-pop$ -- 101
+int.to.str$ -- 11
+missing$ -- 95
+newline$ -- 65
+num.names$ -- 13
+pop$ -- 88
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 131
+skip$ -- 107
 stack$ -- 0
-substring$ -- 264
-swap$ -- 447
+substring$ -- 228
+swap$ -- 408
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 0
-while$ -- 32
-width$ -- 14
-write$ -- 145
+while$ -- 29
+width$ -- 13
+write$ -- 133
 (There was 1 warning)

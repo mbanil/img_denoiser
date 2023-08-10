@@ -42,14 +42,14 @@ Example Abstract. Abstract must not include subheadings or citations. Example Ab
 
 Transmission Electron Microscopy (TEM) imaging has been helpful to solve numerous scientific questions in life and material sciences \cite{CURRY200691}$^{,}$\cite{WANG2008395} . However, at times the noise in the acquired images corrupt the signal beyond a useful level. Noise in images can appear due to intrinsic reasons like problems in the sensors or the digital circuits, or due to external factors like the environment. Image denoising plays a vital role especially in suppressing microscopy image noise.
 
-The TEM imaging contrast is based on the interaction between specimen and a multi keV electron beam. While the optical resolution for modern TEM system can be below one angstrom, the high energy electrons often lead to a fast degradation of the sample. For such samples only few electrons can be used for imaging. This leads to a degradation of the images resolution, thus making the image hard to interpret. Therefore, after image acquisition, numerical processing is required to enhance the image quality.
+The TEM imaging contrast is based on the interaction between specimen and a multi keV electron beam. While the optical resolution for modern TEM system can be below one angstrom, the high energy electrons often lead to a fast degradation of the sample. For such samples only few electrons can be used for imaging. This leads to a degradation of the images resolution, thus making the image hard to interpret. Therefore after image acquisition, numerical processing is required to enhance the image quality.
 
 To get maximal image quality with minimal dose, various image denoising algorithms were proposed in the past. Conventional denoising methods\cite{bcm_nlm}$^{,}$ \cite{DBLP:journals/tip/BM3D} use only noisy images for the denoising task, whereas most modern methods involving a deep neural network\cite{zhang2018ffdnet}$^{,}$ \cite{zhang2017beyond} require clean images as ground truths for training. Since clean electron microscopy images are not available in most cases, modern denoising methods that require clean images as ground truths cannot be used. However, there are also some deep neural network based methods that use noisy supervision\cite{DBLP:journals/corr/abs-1803-04189} and self supervision\cite{krull2019noise2void} . Although, conventional and self-supervised methods have shown success in denoising images, these methods improved the denoising quality only by a relatively small margin for images with repeated patterns. Hence, a new denoising algorithm is proposed and its results are analyzed and compared with the state-of-the-art methods showing significant gain in image quality. 
 
 
 \section*{Method}
 
-The proposed denoising algorithm identifies similar patches within the entire image and averages them to suppress the noise that is randomly distributed. Since the noise is assumed to be having zero mean, it cancels out when multiple patches are averaged. However the base signal remains the same throughout and averaging does not disrupt the signal. Hence combining different patches result in the denoised image, close to the actual signal value. 
+The proposed denoising algorithm identifies similar patches within the entire image and averages them to suppress the noise. Averaging patches with similar information suppresses noise that is randomly distributed. Since the noise is assumed to be having zero mean, it cancels out when multiple patches are averaged. However the base signal remains the same throughout and averaging does not disrupt the signal. Hence combining different patches result in the denoised image, close to the actual signal value. 
 
 Let $x_{i}$ be the $i^{th}$ noisy patch, $k$ be the number of patches that are averaged, $s_i$, and $n_i$ be the signal and noise in the $i^{th}$ patch respectively. Then,
 \begin{equation}
@@ -203,33 +203,13 @@ The following can be concluded from the figure \ref{fig:comparison}:
 
 Apart from the qualitative improvement in the results, the proposed algorithm has a bigger advantage with regards to the computational time. The runtime of the proposed method for the images in figure \ref{fig:comparison} was 19.4 seconds, where as NLM, which was the closest to our results had a runtime of 171.4 seconds. This optimization in the runtime is particularly helpful when denoising image stacks from Transmission Electron Microscopy. The images in the stacks are \textbf{sometimes/often?} similar. In such cases, our algorithm not only matches the templates in the current image, but also the patches from other images in the stack. This significantly improves the quality of the results and with GPU computations, the computation speed is quite fast. For reference, the denoising of an image stack with 10 images of size 1024*1024 pixels took 281.8 seconds. The computations were carried out on a computer with 128 GB of RAM, Intel Xenon processor (16 CPUs), and Nvidia RTX6000 GPU.
 
-\subsection*{Comparison with sample images}
-
-Obtaining a noise free image is often very difficult when it comes to microscopy. For quantitative comparison of results, we have generated a noise free image (ground truth) artificially using python. The generated image tries to imitate the microscopy images which are best suited for applying our algorithm, i.e. images with similar patterns spread across the image. Noisy image is simulated by adding Poisson noise to the generated image. Different denoising methods have been applied on this noisy image and the Peak Signal to Noise Ratio (PSNR) and Structural Similarity Index Metric (SSIM) values of the denoised images have been found with respect to the ground truth. The ground truth, noisy image and the results from different methods can be seen in the figure \ref{fig:comparison}. 
-
-The results from Non-Local Means show minimum improvement. This is because that this method requires similar image patches that are present close to each other, which is not always the case in the generated image. BM3D processes the image in the Fourier domain and hence suppressing the high frequency components. This results in the sharp features of the image being less prominent. N2V does a better denoising job which is reflected in it's PSNR value. However, on close inspection it can be observed that the high frequency components appear slightly blurred. This is where our method performs better. The pattern matching used to find similar pattern across the image ensures the correctness while preserving the sharpness of the image. This is also reflected in a higher SSIM value.
-
-It should be noted that PSNR is based on mean squared error and is a distortion based evaluation metric. In image restoration there is always a trade-off between the distortion and the perceptual quality of the restored image. Often it is not possible to achieve both simultaneously \cite{8578750}. In the figure \ref{fig:comparison}, for our method even though we do not achieve the best PSNR value, we obtain the best results w.r.t SSIM which is a more perceptual metric \cite{8578750}.
-
-\begin{figure}
-	\centering
-	\includegraphics[scale=0.45]{./imgs/comparison_sample.jpg}
-	\caption{Comparison of results obtained from different methods}
-	\label{fig:comparison}
-\end{figure}
+\subsection*{Comparison with example images}
 
 
 \subsection*{Confidence map}
 From the above discussions, it can be observed that the algorithm can introduce artifacts. It is important to recognize this to determine if the denoised image is satisfactory. Since it is challenging to detect minute artifacts from Fourier analysis, a confidence map was developed. This confidence map is based on the variance within each cluster obtained after applying clustering. The variance should be small if the centroid is a good representation of its members. Also, a good centroid should not have any patterns in its variance. Patterns in the variance show that the centroid does not generalize its members well. 
 
 The confidence map of the denoised image is calculated by combining the variances\cite{chan1982updating} for different centroids as they are back plotted. The overall variance map, i.e., the confidence map of a denoised image is as shown in figure \ref{fig:confidence_map}. This result has been produced for demonstration purpose with a very few initial \textit{reference patches} selected very close to each other. The bright regions in the confidence map correspond to the denoised image artifacts. For instance, a bright region can be seen in the confidence map at the top-right position. An artifact can be found by inspecting the same region on the denoised image. Similarly, irregularities in the black region on the left side of the denoised image can be recognized by the brighter regions of the confidence map.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.7]{./imgs/confidence_map.png}
-	\caption{Comparison of results obtained from different methods}
-	\label{fig:confidence_map}
-\end{figure}
 
 \section*{Discussion}
 
