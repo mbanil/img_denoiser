@@ -94,6 +94,13 @@
 \newblock {\emph{\JournalTitle{Ind. Light Magic}}}
   \textbf{\bibinfo{volume}{10}} (\bibinfo{year}{2001}).
 
+\bibitem{8578750}
+\bibinfo{author}{Blau, Y.} \& \bibinfo{author}{Michaeli, T.}
+\newblock \bibinfo{title}{The perception-distortion tradeoff}.
+\newblock In \emph{\bibinfo{booktitle}{2018 IEEE/CVF Conference on Computer
+  Vision and Pattern Recognition}}, \bibinfo{pages}{6228--6237},
+  \doiprefix\url{10.1109/CVPR.2018.00652} (\bibinfo{year}{2018}).
+
 \bibitem{chan1982updating}
 \bibinfo{author}{Chan, T.~F.}, \bibinfo{author}{Golub, G.~H.} \&
   \bibinfo{author}{LeVeque, R.~J.}
