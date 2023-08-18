@@ -1,40 +1,8 @@
 from copy import deepcopy
 from skimage import io
-import hyperspy.api as hs
 import numpy as np
 from skimage.feature import match_template
 import os
-
-
-def loadData(folderPath, fileName):
-    imgs = []
-
-    img_path = os.path.join(folderPath, fileName)
-
-    if fileName.lower().endswith(('.png', '.jpg', '.jpeg', '.tif')):
-        if len(io.imread(img_path).shape) > 2:
-            b = np.float64(io.imread(img_path))
-            for j in range(b.shape[0]):
-                imgs.append(b[j, :, :])
-        else:
-            imgs.append(np.float64(io.imread(img_path)))
-    elif fileName.lower().endswith(('.dm3', '.emd')):
-        dm3Data = hs.load(img_path)
-        if fileName.lower().endswith(('.emd')):
-            data = []
-            for channel in dm3Data:
-                data.append(np.float64(channel.data))
-            data = np.stack(data, axis=2)
-            imgs.append(data)
-        else:
-            imgs.append(np.float64(dm3Data.data))
-            if len(imgs[0].shape) > 2:
-                imgs = list(imgs[0])
-    else:
-        print('ERROR: filetyp not supported! Please contact me.')
-
-    return imgs
-
 
 def generateTemplates(intial_patch_locations, image, radius):
     templates = []
