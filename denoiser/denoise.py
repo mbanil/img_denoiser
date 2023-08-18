@@ -8,7 +8,6 @@ from random import randint
 import torch
 import plotly.express as px
 import plotly
-import h5py
 from pathlib import Path
 import tifffile
 
