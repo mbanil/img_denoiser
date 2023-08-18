@@ -38,26 +38,20 @@ def run(image_path, result_folder_path, min_patches_per_class, max_patches_per_c
                                              patch_size, 
                                              termination_number, 
                                              analyze, 
-                                             clustering_factor)
+                                             clustering_factor)[0]
 
     tifffile.imsave(result_folder_path + "denoised_" + file_name + ".tif", denoised_image)
 
 if __name__ == "__main__":
 
-    try:
+    args = get_args()
 
-        args = get_args()
-
-        run(args.image_path, 
-            args.result_folder_path,
-            args.min_patches_per_class, 
-            args.max_patches_per_class, 
-            args.iteration_counter,
-            args.patch_size,
-            args.termination_number,
-            args.analyze,
-            args.clustering_factor)
-
-        
-    except Exception as e:
-        print("Exception occured: ", e)
+    run(args.image_path, 
+        args.result_folder_path,
+        args.min_patches_per_class, 
+        args.max_patches_per_class, 
+        args.iteration_counter,
+        args.patch_size,
+        args.termination_number,
+        args.analyze,
+        args.clustering_factor)
