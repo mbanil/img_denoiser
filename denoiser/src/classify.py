@@ -15,7 +15,7 @@ def tempfuncname(radius, imgs, templates, maxNumberInClass, minNumberInClass):
 
 def classifyTemplates(radius, imgs, templates):
 
-    minradius = np.int16(radius/2)
+    minradius = int(radius/2)
     maxresultindices = []
     maxresults = []
     sortedIndices = []

@@ -9,8 +9,8 @@ def generateTemplates(intial_patch_locations, image, radius):
 
     # templates are only taken from the first image of the imges list (since the images are similar)
     for start_pos in intial_patch_locations:
-        templates.append(deepcopy(image[0, start_pos[0]:start_pos[0]+np.int(2*radius),
-                                        start_pos[1]:start_pos[1]+np.int(2*radius)]))
+        templates.append(deepcopy(image[0, start_pos[0]:start_pos[0]+int(2*radius),
+                                        start_pos[1]:start_pos[1]+int(2*radius)]))
 
     return templates
 
@@ -41,8 +41,8 @@ def findDissimilarTemplates(templates, imgs, radius, minTemplateClasses):
             idx = (minresults[i].flatten()).argsort()
             idxd = np.unravel_index(idx, resultshape)
 
-            templates.append(deepcopy(img[idxd[0][best]:idxd[0][best]+np.int(2*radius),
-                                          idxd[1][best]:idxd[1][best]+np.int(2*radius)]))
+            templates.append(deepcopy(img[idxd[0][best]:idxd[0][best]+int(2*radius),
+                                          idxd[1][best]:idxd[1][best]+int(2*radius)]))
 
             if len(templates) >= minTemplateClasses:
                 break
