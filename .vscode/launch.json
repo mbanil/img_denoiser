@@ -9,7 +9,8 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": ["--image_path","/home/akm/data/lamellae/01_Laellae_stackreg_555images.tif", "--result_folder_path","/home/akm/data/lamellae/img_denoiser/"]
         }
     ]
 }
