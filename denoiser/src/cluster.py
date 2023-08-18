@@ -75,7 +75,7 @@ def cluster(radius, templates, picDic, improvSNR):
                 (picDic[jt][j]["template"]*backplotwindow).flatten())
             n += 1
         linked = linkage(temp, method='ward')
-        numberofClusters = np.int(np.ceil((templateCount / (improvSNR**2))))
+        numberofClusters = int(np.ceil((templateCount / (improvSNR**2))))
         clusters_ = fcluster(linked,  numberofClusters, criterion='maxclust')
 
         centroid = [None]*numberofClusters

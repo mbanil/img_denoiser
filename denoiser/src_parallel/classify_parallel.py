@@ -17,7 +17,7 @@ def tempfuncname(radius, image, templates, maxNumberInClass, minNumberInClass, p
 
 def classifyTemplates(radius, imgs, templates, pool):
 
-    minradius = np.int16(radius/2)
+    minradius = int(radius/2)
     maxresultindices = []
     maxresults = []
     sortedIndices = []
@@ -79,7 +79,7 @@ def generateNewTemplates(templates, imgs, sortedIndices, maxresults, maxresultin
         maxresultindex = maxresultindices[i]
         for j in range(len(idxd[0])):
             # try:
-            jt = np.int32(maxresultindex[idxd[0][j], idxd[1][j]])
+            jt = int(maxresultindex[idxd[0][j], idxd[1][j]])
             newTemplates[templateIDs[jt]] += deepcopy(
                 img[idxd[0][j]:(idxd[0][j]+2*radius), (idxd[1][j]):(idxd[1][j]+2*radius)])
             ncount[templateIDs[jt]] += 1
