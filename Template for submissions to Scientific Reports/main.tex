@@ -114,7 +114,7 @@
 		\label{fig:initial_reference_patches}
 	\end{figure} 
 	
-	In the `classify'  section shown in figure \ref{fig:flowchart}, the patches at every position in the image are classified into different groups based on the \textit{reference patch} using cosine similarity. When the cosine similarity is applied, each of patches of size $m*m$ in the image is compared with every other $m*m$ \textit{reference patch}. The result has values between -1 and 1 as the results are normalized. The location with a perfect match is represented by value 1. The patches similar to the \textit{reference patch} are represented by values close to 1. 
+	In the `classify'  section shown in figure \ref{fig:flowchart}, the patches at every position in the image are classified into different groups based on the \textit{reference patch} using cosine similarity. When cosine similarity is applied, each patch of size $m*m$ in the image is compared with every other $m*m$ \textit{reference patch}. The result has values between -1 and 1 as the results are normalized. The location with a perfect match is represented by value 1. The patches similar to the \textit{reference patch} are represented by values close to 1. 
 	
 	Cosine similarity is carried out with all $n$ \textit{reference patches} and all the results are stacked into an array. From this array, the best fitting reference patch index at every position can be determined. Now, the patches in the image that are most similar to the \textit{reference patches} are identified and grouped together.   
 	
@@ -122,7 +122,7 @@
 	
 	%Although patches at every location are classified to belong into a group, all these patches are not considered. The patches which have a strong correlation with one of the \textit{reference patches} are prioritized. This is done by selecting patches that are close to the maxima in the template matching result. When these patches with strong correlation are selected, the patches around them in the close neighborhood are deleted. That is, if a patch is selected from $(x, y)$, then no patches in the region from $(x-a$ to $x+a, y-a$ to $y+a)$ are selected, where $(a \approx m/4)$ with $m*m$ being the patch size. This gap between patches is used to remove redundant information. Removing redundant information improves the computation speed without affecting the denoising quality.
 	
-	In the next step, the newly formed groups are deleted or split into more groups based on the group size. The reasoning behind this process is that groups with few members contribute hardly to any denoising, while overly large groups might lead to a loss of detail.  Finally, for each group the old \textit{reference patch} is replaced by the average of all the members in that group. In the next iteration, cosine similarity and the classification steps repeat with these new \textit{reference patches}. We choose to terminate the “classify” section when the total number of reference patches in three consecutive iterations remains the same. Figure \ref{fig:final_reference_patches} shows the reference patches generated after 15 iterations. On comparing figure 1 and figure 4, one can observe that the noise in the final reference patches has been significantly suppressed.
+	In the next step, the newly formed groups are deleted or split into finer groups based on the group size. The reasoning behind this process is that groups with few members contribute hardly to any denoising, while overly large groups might lead to a loss of detail.  Finally, for each group the old \textit{reference patch} is replaced by the average of all the members in that group. In the next iteration, cosine similarity and the classification steps repeat with these new \textit{reference patches}. We choose to terminate the “classify” section when the total number of reference patches in three consecutive iterations remains the same. Figure \ref{fig:final_reference_patches} shows the reference patches generated after 15 iterations. On comparing figure 1 and figure 4, one can observe that the noise in the final reference patches has been significantly suppressed.
 	
 	%Once groups of similar patches are formed, the groups are deleted or split into more groups based on the member size. This is because that if the group size is small, there is hardly any denoising effect. On the other hand, if the group size is too big, there can be artifacts generated during averaging due to increased variance. Each of the old \textit{reference patches} is now replaced by the average of all the members in that group. In the next iteration, cosine similarity and the classification steps repeat with these new \textit{reference patches}. One can observe that every iteration may generate new \textit{reference patches}. New \textit{reference patches} are generated when big groups are split into smaller groups. The ``classify” section terminates when the total number of \textit{reference patches} in three consecutive iterations remains the same. Figure \ref{fig:final_reference_patches} shows the \textit{reference patches} generated after 15 iterations. On comparing figure \ref{fig:initial_reference_patches} and figure \ref{fig:final_reference_patches}, one can observe that the noise in the final \textit{reference patches} has been suppressed.
 	
@@ -133,22 +133,22 @@
 		\label{fig:final_reference_patches}
 	\end{figure} 
 	
-	If the final \textit{reference patches} are used for back plotting (i.e. to replace the patches in their corresponding groups), there are still some artifacts (as shoown ) present because of the following reasons. 
+	If the final \textit{reference patches} are used for back plotting (i.e. to replace the patches in their corresponding groups), there are still some artifacts (as shown ) present because of the following reasons. 
 	
 	%After running the ``classify” section multiple times, the final \textit{reference patches} are used to replace the patches in their corresponding groups. The denoised image is constructed by using these final \textit{reference patches}. Since \textit{reference patches} can overlap during reconstruction, a $2D$ Gaussian weight is used. The information at the center of a patch is important than the edges. While back plotting, if multiple patches overlap, a weighted average is done. Weighted average with Gaussian weights ensures that the back plotted images do not have sharp edges from the patches used, as the information from the patch edges is suppressed. The back plotted image can be seen in figure \ref{fig:backplot-1}. The following can be inferred from the back plot:
 	
 	\begin{itemize}
 		\item There can be patches in a group that are less similar to the \textit{reference patch}. When these dissimilar patches are averaged, the average might differ from the actual patch by a large extent. 
-		\item Cosine similarity is only sensitive to the structure for any two patches which only differ by a constant positive. Therefore, back ploting might not recover local brightness variations.
+		\item Cosine similarity is only sensitive to the structure for any two patches and ignores a constant positive (brightness). Therefore, back plotting might not recover local brightness variations.
 	\end{itemize}
 	
-	These problems can be solved by averaging over a small group with very closely matched patches. To achieve this, clustering is applied within every group (represented by the final \textit{reference patch}) to create smaller subgroups. The number of clusters in a group can be adjusted by a user set parameter. In other words, the signal-to-noise ratio can be adjusted by changing this parameter value. While previously the whole group was represented by a single \textit{reference patch}, it is now represented by the centriods of the subgroups due to the clustering. Centroids are back plotted with a $2D$ Gaussian weighted average. Gaussian weight smoothens the edges of the centroids, thus preventing artifacts in the reconstructed image. 
+	These problems can be solved by averaging over a small group with very closely matched patches. To achieve this, clustering is applied within every group (represented by the final \textit{reference patch}) to create smaller subgroups. The number of clusters in a group can be adjusted by a user set parameter. In other words, the signal-to-noise ratio can be adjusted by changing this parameter value. While previously the whole group was represented by a single \textit{reference patch}, it is now represented by the centriods of the subgroups due to the clustering. Centroids are back plotted with a $2D$ Gaussian weighted average. These Gaussian weights smoothen the edges of the centroids, thus preventing artifacts in the reconstructed image. 
 	
 	A pseudo implementation of the algorithm is shown in the additional information section \ref{algorithm:denoising_algorithm}. The implementation of the denoising algorithm can be found on github\footnote{\url{https://github.com/mbanil/img-denoiser}}.
 	
 	\subsection*{Parameters of the algorithm and stability}
 	
-	The algorithm requires a few parameters which the users can tune in order to get optimal performance. Size of the features defined by patch size, position of the initial patches and depending on the amount of denoising desired, the upper and lower limit of the group size for cosine similarity classification can be defined. Finally, the group size for clustering can also be adjusted. This is closely related to the desired signal to noise enhancement. If the user desires an improvement of approximately $N$, the average number of elements in a subgroup should be $N^2$.
+	The algorithm requires a few parameters which the users can tune in order to get optimal performance. The parameters include size of the features defined by patch size, position of the initial patches and depending on the amount of denoising desired, the upper and lower limit of the group size for cosine similarity classification. Finally, the group size for clustering can also be adjusted. This is closely related to the desired signal to noise enhancement. If the user desires an improvement of approximately $N$, the average number of elements in a subgroup should be $N^2$.
 	
 	
 	%The following are the algorithm parameters.
@@ -178,7 +178,7 @@
 	\end{figure}
 	
 	
-	The proposed algorithm is mainly developed to denoise TEM images having repeated structures. The noisy image, the results from all the methods and their Fast Fourier transforms (FFT)\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.fft.fft2.html}} can be seen in figure \ref{fig:comparison}. The FFT converts data from the spatial domain into the frequency domain. The white structures in the FFT represent information in the images. The signal corresponding to the low frequency components are represented at the center of the FFT and higher frequency components are present as we move away from the center. Noise corresponds to the high frequency components of the FFT and is present close to the edges.
+	The proposed algorithm is mainly developed to denoise TEM images having repeated structures. The noisy image, the results from all the methods and their Fast Fourier transforms (FFT)\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.fft.fft2.html}} can be seen in figure \ref{fig:comparison}. The FFT converts data from the spatial domain into the frequency domain. \textit{The white structures in the FFT represent information in the images???}. The signal corresponding to the low frequency components are represented at the center of the FFT and higher frequency components are present as we move away from the center. Noise corresponds to the high frequency components of the FFT and is present close to the edges.
 	
 	The following can be concluded from the figure \ref{fig:comparison}:
 	\begin{itemize}
@@ -213,7 +213,7 @@
 	
 	\begin{figure}
 		\centering
-		\includegraphics[scale=0.45]{./imgs/comparison_sample.jpg}
+		\includegraphics[scale=0.5]{./imgs/comparison_sample.jpg}
 		\caption{Comparison of results obtained from different methods}
 		\label{fig:comparison}
 	\end{figure}
