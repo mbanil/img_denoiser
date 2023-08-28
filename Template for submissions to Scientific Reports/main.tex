@@ -137,13 +137,13 @@
 	
 	\subsection*{Parameters of the algorithm and stability}
 	
-	For optimal performance, the algorithm requires a few parameters which the users can tune. The parameters include size of the features defined by patch size, position of the initial patches and depending on the amount of denoising desired, the upper and lower limit of the group size for cosine similarity classification. Finally, the group size for clustering can also be adjusted, which closely defines the desired signal to noise enhancement. If the user desires an improvement of approximately $N$, the average number of elements in a subgroup should be $N^2$ \cite{bcm_nlm}.
+	For optimal performance, the algorithm requires a few parameters which the users can tune. The parameters include size of the features defined by patch size, position of the initial patches and depending on the amount of denoising desired, the upper and lower limit of the group size for cosine similarity classification. Finally, the group size for clustering can also be adjusted, which closely defines the desired signal to noise enhancement. If the average number of elements in a subgroup is $N^2$, there is an improvement in the signal quality by a factor of $N$ times\cite{bcm_nlm}.
 	
 	\section*{Results}
 	
 	\begin{figure}
 		\centering
-		\includegraphics[scale=0.435]{./imgs/comparison-new.jpg}
+		\includegraphics[scale=0.54]{./imgs/comparison-new.jpg}
 		\caption{Comparison of results obtained from different methods}
 		\label{fig:comparison}
 	\end{figure}
@@ -189,7 +189,7 @@
 		\label{fig:comparison_sample}
 	\end{figure}
 
-	Since obtaining a noise free image is often very difficult when it comes to microscopy, we generated a noise free image (ground truth) artificially for quantitative comparison. The generated image tries to imitate the kind of microscopy images which are best suited for our algorithm's application, i.e. images with similar patterns spread across them. A noisy image is simulated by adding Poisson noise to the generated image. Different denoising methods were applied on this noisy image and the Peak Signal to Noise Ratio (PSNR) and Structural Similarity Index Metric (SSIM) values of the denoised images have been found with respect to the ground truth. The ground truth, noisy image and the results from different methods can be seen in the figure \ref{fig:comparison_sample}. 
+	Since obtaining a noise free image is often very difficult when it comes to microscopy, we generated a noise free image (ground truth) artificially for quantitative comparison. The generated image tries to imitate the kind of microscopy images which are best suited for our algorithm's application, i.e. images with similar patterns spread across them. A noisy image is simulated by adding Poisson noise to the generated image. Different denoising methods were applied on this noisy image and the Peak Signal to Noise Ratio (PSNR) and Structural Similarity Index Metric (SSIM) values of the denoised images have been found with respect to the ground truth. The ground truth, noisy image and the results from different methods can be seen in the figure \ref{fig:comparison_sample}. Additionally, a comparison of FFT of these images is shown in section \ref{fft_comparison}.
 	
 	The results from Non-Local Means show minimum improvement. The reason is, this method requires similar image patches that are present close to each other, which is not always the case in the generated image. BM3D processes the image in the Fourier domain and hence suppressing the high frequency components. This results in the sharp features of the image being less prominent. N2V does a better denoising job which is reflected in it's PSNR value. However, on close inspection it can be observed that the high frequency components appear slightly blurred. This is where our method out performs the others. The pattern matching used to find similar pattern across the image ensures the correctness while preserving the sharpness of the image. This is also reflected in a higher SSIM value.
 	
@@ -226,6 +226,18 @@
 	A.A. conceived the experiment(s),  A.A. and B.A. conducted the experiment(s), C.A. and D.A. analysed the results.  All authors reviewed the manuscript. 
 	
 	\section*{Additional information}
+	
+	\subsection*{FFT comparison of the sample images}
+	\label{fft_comparison}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.6]{./imgs/comparison-sample_fft.jpg}
+		\caption{Comparison of FFTs of images obtained from different methods}
+		\label{fig:comparison_sample_fft}
+	\end{figure}
+
+	In addition to the quantitative comparison of different denoising algorithms for the artificially generated image, an FFT comparison is shown in figure \ref{fig:comparison_sample_fft}. The fine details are not visible on the FFTs for the images denoised using Non-Local Means and BM3D. The FFT of these images are closer to the FFT of noisy images with small improvements. The FFT of the image denoised with N2V shows finer details. However, the FFT of the image denoised with our method shows the most details compared to the others. The FFT from our method is also the one which is the closest to that of the ground truth. This clearly shows that our method, outperforms the other methods in image restoration while preserving the fine details of the image. 
 	
 	\subsection*{Algorithm}
 	\label{algorithms}
@@ -311,7 +323,7 @@
 			\end{algorithmic}
 		\end{algorithm}
 		
-		\clearpage
+%		\clearpage
 		
 		%\begin{algorithm}
 		%	\caption{Algorithm for calculating variance}
@@ -323,5 +335,8 @@
 			%		\State \textit{Var\_AB} = \textit{M2} / (\textit{n} - 1);
 			%	\end{algorithmic}	
 		%\end{algorithm}
+		
+			
+
 		
 	\end{document}
