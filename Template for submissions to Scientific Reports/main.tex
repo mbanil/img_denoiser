@@ -4,11 +4,20 @@
 \usepackage{algorithm,algpseudocode}
 \usepackage{mathtools}
 \usepackage{epstopdf}
+\usepackage[justification=justified,
+	format=plain]{caption}
 \epstopdfDeclareGraphicsRule{.tif}{png}{.png}{%
 	convert #1 \OutputFile         
 }
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil} 
 \title{Pattern matching based denoising for images with repeated sub structures.}
+
+% Keywords command
+\providecommand{\keywords}[1]
+{
+	\small	
+	\textbf{\textit{Keywords---}} #1
+}
 
 \author[1,*]{Alice Author}
 \author[2]{Bob Author}
@@ -26,19 +35,26 @@
 \begin{abstract}
 	In electron microscopy, obtaining a noise-free image is often difficult especially when examining biological samples or delicate materials. Therefore, the suppression of noise is essential for the analysis of such noisy images. State of the art image denoising methods are dominated by supervised Convolution Neural Network (CNN) based methods. However, if a noise-free ground truth is unavailable, it is not possible to use supervised CNNs. To address this problem, a denoising algorithm is proposed that uses re-occurring patterns in images. The proposed method does not require noise-free images for the denoising task. Instead, it is based on the idea that averaging images with the same signal having independent noise, suppresses the overall noise. In order to evaluate the performance of our method, our results are compared with other state of the art denoising methods that do not require a noise free image. Additionally, a confidence map is developed for evaluating the denoising quality of the proposed method. Furthermore, to ensure scalability, time complexity  of the algorithm is analyzed and optimizations are made to improve the run-time efficiency.
 \end{abstract}
+
+
+
+
 \begin{document}
 	
-	\flushbottom
+	%\flushbottom
 	\maketitle
 	% * <john.hammersley@gmail.com> 2015-02-09T12:07:31.197Z:
 	%
 	%  Click the title above to edit the author information and abstract
 	%
-	\thispagestyle{empty}
+	%\thispagestyle{empty}
+	
+	\noindent
+	\textbf{Keywords:} Image denoising, Pattern matching, Transmission Electron Microscopy
 	
 	\section*{Introduction}
 	
-	Transmission Electron Microscopy (TEM) imaging is essential in solving numerous scientific questions in life and material sciences \cite{CURRY200691}$^{,}$\cite{WANG2008395} . However, noise in the acquired images corrupt the signal beyond a useful level. This noise can appear due to various reasons like data transmission errors, properties of the imaging systems, environmental conditions like humidity, temperature, etc. Thus, image denoising plays a vital role especially in suppressing microscopy image noise.
+	Transmission Electron Microscopy (TEM) imaging is essential in solving numerous scientific questions in life and material sciences \cite{CURRY200691}$^{,}$\cite{WANG2008395}. However, noise in the acquired images corrupt the signal beyond a useful level. This noise can appear due to various reasons like data transmission errors, properties of the imaging systems, environmental conditions like humidity, temperature, etc. Thus, image denoising plays a vital role especially in suppressing microscopy image noise.
 	
 	The contrast in TEM imaging is based on the interaction of a multi keV electron beam with the specimen. While the optical resolution for modern TEM system can be below one angstrom, the high energy electrons often lead to a fast degradation of the sample. For such samples only few electrons can be used for imaging. This leads to a degradation of the image's effective resolution, thus making the image hard to interpret. Therefore, after image acquisition, numerical processing is required to enhance the image quality.
 	
@@ -67,16 +83,18 @@
 	\end{equation}
 	since $Var(s_i) = 0$ for all $i$. Hence averaging patches with the same signal suppresses noise.
 	
+
+	
 	%The basic idea of the algorithm can be compared with the Single Particle Imaging \cite{bhushan_single_2017}, which is an image processing technique used to analyze low dose Transmission Electron Microscopy (TEM) images of identical but dose sensitive samples. Images of specimens obtained from TEM are often very noisy, and hence it is difficult to interpret the information contained in the image. Averaging several images of the same specimen can remove random noise and make the information more interpretable \cite{bhushan_single_2017}.
 	
 	%It can also be said that this algorithm is similar to the Non-Local Means \cite{bcm_nlm} algorithm in some aspects. In Non-Local Means, similar patches are found only from the immediate surroundings, where as the region of interest is not restricted in the proposed denoising algorithm. Increasing the search space in Non-Local Means has a massive impact on the computation speed. 
 	
 	\subsection*{Outline of the proposed algorithm}
 	
-	\begin{figure}
+	\begin{figure}[H]
 		\centering
 		\includegraphics[scale=0.7]{./imgs/flowchart.png}
-		\caption{Flowchart of the algorithm}
+		\caption{ The proposed algorithm is depicted in this flowchart. It begins by randomly selecting patches from the noisy input image, which serve as templates for subsequent pattern matching. In the `classify' section, an iterative pattern matching process is employed to group similar patches together, with further splitting the group based on it's size and averaging the group members to reduce noise. Despite this noise reduction, artifacts may persist when group has a large variance, which is why the algorithm includes a 'cluster' section to refine the groups formed. This step prioritizes grouping the most similar patches, resulting in a seamless, artifact-free image. It's worth noting that the algorithm strategically incorporates pattern matching before clustering to minimize computational overhead, ensuring an efficient denoising process.}
 		\label{fig:flowchart}
 	\end{figure} 
 	
@@ -97,16 +115,12 @@
 	
 	%\footnotetext{\url{https://scikit-image.org/docs/dev/auto_examples/features_detection/plot_template.html}}
 	
+
 	
 	
 	The algorithm begins with the initialization of random patches of size $m*m$, which are used for matching other patches of the same size in the image. The patches that are used as templates for matching are referred to as \textit{reference patches}. One example for the initial choice of \textit{reference patches} can be seen in figure \ref{fig:initial_reference_patches}. 
 	
-	\begin{figure}
-		\centering
-		\includegraphics[scale=0.75]{./imgs/initial_reference_patches.png}
-		\caption{Example set of initial \textit{reference patches} (of size $48*48$ pixels), taken from different regions of the input image. These are the first set of patches that are used as templates for pattern matching in the proposed algorithm. These raw image patches exhibit significant signal corruption, which is readily apparent. }
-		\label{fig:initial_reference_patches}
-	\end{figure} 
+	
 	
 	% In the `classify'  section shown in figure \ref{fig:flowchart}, the patches at every position in the image are classified into different groups based on their similarity to the \textit{reference patch} using cosine similarity. When cosine similarity is applied, each patch of size $m*m$ in the image is compared with all the \textit{reference patches}. The result has values between -1 and 1 as the results are normalized. The location with a perfect match is represented by value of 1 and patches similar to the \textit{reference patch} are represented by values close to 1. 
 	
@@ -115,21 +129,22 @@
 	
 	Some of these groups formed can sometimes have large number of patches in the same group, while others may contain very few unique patches. Groups with few members contribute hardly to any denoising, while overly large groups might lead to a loss of detail. Hence, the groups formed are deleted or split into finer groups based on the group size. Finally for each new group, the old \textit{reference patch} is replaced by the average of all the members in that group. In the next iteration, cosine similarity and the classification steps repeat with these new \textit{reference patches}. When the classification becomes stable, there are no new groups formed. This is when the iteration loop is broken. Figure \ref{fig:final_reference_patches} shows the \textit{reference patches} generated after 15 iterations. On comparing figure \ref{fig:initial_reference_patches} and figure \ref{fig:final_reference_patches}, one can observe that the noise in the final \textit{reference patches} has been significantly suppressed.
 
+	\begin{figure}
+		\centering
+		\includegraphics[scale=0.75]{./imgs/initial_reference_patches.png}
+		\caption{Example set of initial \textit{reference patches} (of size $48*48$ pixels), taken from different regions of the input image. These are the first set of patches that are used as templates for pattern matching in the proposed algorithm. These raw image patches show little to no structure and the noise in these patches is dominant. }
+		\label{fig:initial_reference_patches}
+	\end{figure} 
 	
 	\begin{figure}
 		\centering
 		\includegraphics[scale=0.8]{./imgs/final_reference_patches.png}
-		\caption{Example subset of the final \textit{reference patches} (of size $48*48$). These are obtained from iteratively matching \textit{reference patches} with patches from all positions of the image, grouping similar patches, splitting the group based on the size and averaging the members within a group. These are also the patches obtained after the `classify' section of the flowchart shown in figure \ref{fig:flowchart}.}
+		\caption{Example subset of the final \textit{reference patches} (of size $48*48$). These are also the patches obtained after the `classify' section of the flowchart shown in figure \ref{fig:flowchart}. The noise suppression in these images is already evident on comparing these images with the initial \textit{reference patches} in figure \ref{fig:initial_reference_patches}.}
 		\label{fig:final_reference_patches}
 	\end{figure} 
+
 	
-	If the final \textit{reference patches} are directly used for back plotting (i.e. to replace the patches in their corresponding groups), there would be still some artifacts present due of the following reasons. 
-	
-	
-	\begin{itemize}
-		\item Sometimes image patches that are not similar to any of the \textit{reference patches} end up falling into the best available group, even though the group might not be their best representation. This is required since the entire region of the image has to be covered. When outliers are included during averaging, the mean deviates from the median signal value. Additionally, the unique features present as outliers will be lost in the averaging process, both of which are undesirable. 
-		\item Cosine similarity is only sensitive to the structure for any two patches and ignores the offset (i.e. brightness). Therefore, back plotting might not recover local brightness variations.
-	\end{itemize}
+	If the final \textit{reference patches} are directly used for back plotting (i.e. to replace the patches in their corresponding groups), there would be still some artifacts present. This could be because, sometimes image patches that are not similar to any of the \textit{reference patches} end up falling into the best available group, even though the group might not be their best representation. This is required since the entire region of the image has to be covered. When outliers are included during averaging, the mean deviates from the median signal value. Additionally, the unique features present as outliers will be lost in the averaging process, both of which are undesirable. Another reason for artifacts is that, cosine similarity is only sensitive to the structure for any two patches and ignores the offset (i.e. brightness). Therefore, back plotting might not recover local brightness variations.
 	
 	These problems can be solved by averaging over a small group with very closely matched patches. To achieve this, clustering is applied within every group (represented by the final \textit{reference patch}) to create smaller subgroups. The number of clusters in a group can be adjusted by a user set parameter. In other words, the target signal-to-noise ratio can be adjusted by changing this parameter value. While previously the whole group was represented by a single \textit{reference patch}, it is now represented by centroids of the subgroups after clustering. Centroids are back plotted with a $2D$ Gaussian weighted average. These Gaussian weights smoothen the edges of the centroids, thus preventing artifacts in the reconstructed image. 
 	
@@ -141,42 +156,32 @@
 	
 	\section*{Results}
 	
+	The proposed algorithm is mainly developed to denoise TEM images with repeated structures. In figure \ref{fig:comparison} the noisy image, the results from all the methods and their Fast Fourier transforms (FFT) can be seen. The FFT converts data from the spatial domain to the frequency domain. The signal corresponding to the low frequency components are represented at the center of the FFT and higher frequency components are present as we move away from the center. Noise corresponds to the unstructured background, as seen in the high frequency region of the FFT, and is present close to the edges.
+	
+	On observing figure \ref{fig:comparison} the noisy image, we can note that the noisy image contains a lot of grainy structures which makes it hard to interpret the information. This is also reflected in the FFT, where clear structures are only visible close to the center. The noisy image is followed by denoised results obtained from different methods. 
+	
+	N2V\cite{krull2019noise2void} is a self supervised, deep learning based image denoising method. N2V was trained with the patches of the noisy image. The training was done with $64*64$ patches, 100 epochs and a neighboring radius of 5. The results from N2V show a decently reconstructed circular structures and the noise in the black region of the image has been removed fairly well. However, the substructures have not been reconstructed accurately. The FFT shows enhanced structures at the center, whereas the boundary mostly looks dark representing the suppression of high frequency noise. 
+		
+	BM3D \cite{DBLP:journals/tip/BM3D} is one of the widely used classical denoising methods. BM3D uses collaborative filtering in the transform domain for denoising images and it is a non blind denoising method, which means that the standard deviation of the noise is required for denoising. The standard deviation was estimated with trial and error. The best results we obtained for a standard deviation of 0.06 for the normalized image. The results from BM3D are similar to that obtained from N2V. The denoising effect is visible but the images are still not very useful for further analysis. This is also supported by the FFT.
+	
 	\begin{figure}
 		\centering
 		\includegraphics[scale=0.54]{./imgs/comparison-new.jpg}
-		\caption{First row shows the noisy image and results obtained from N2V, BM3D, NLM and our proposed method. Corresponding FFTs can be seen in the second row. Comparison of results obtained from different methods. In the first row, insets show a zoomed-in region of the image. These insets are taken from the same location in all images and help in interpreting the denoised results.}
+		\caption{First row (from left to right) shows the noisy image, and results obtained from different methods - N2V, BM3D, NLM and our proposed method. Corresponding FFTs can be seen in the second row. In the first row, insets show a zoomed-in region of the image. These insets are taken from the same location in all images and help in interpreting the denoised results better. It should be noted that, even though NLM is qualitatively close to our method, computationally it is significantly slower. }
 		\label{fig:comparison}
 	\end{figure}
 	
-	The proposed algorithm is mainly developed to denoise TEM images with repeated structures. In figure \ref{fig:comparison} the noisy image, the results from all the methods and their Fast Fourier transforms (FFT) can be seen. The FFT converts data from the spatial domain to the frequency domain. The signal corresponding to the low frequency components are represented at the center of the FFT and higher frequency components are present as we move away from the center. Noise corresponds to the unstructured background, as seen in the high frequency region of the FFT, and is present close to the edges.
-	
-	%\footnote{\url{https://numpy.org/doc/stable/reference/generated/numpy.fft.fft2.html}}
-	
-	The following can be concluded from the figure \ref{fig:comparison}.
-	\begin{itemize}
-		\item The noisy image contains a lot of grainy structures which makes it hard to interpret the information. This is also reflected in the FFT, where clear structures are only visible close to the center.
 		
-		\item N2V\cite{krull2019noise2void} is a self supervised, deep learning based image denoising method. N2V was trained with the patches of the noisy image. The training was done with $64*64$ patches, 100 epochs and a neighboring radius of 5. 
+	Non Local Means (NLM) \cite{bcm_nlm} is a conventional image denoising method that finds similar patches of images within a region and averages them to suppress noise. An NLM implementation with a patch size of $48*48$, a search area of $100*100$ and a cut off distance of 0.36 was used. The result shows a good level of denoising. Circular structures and their subsequent substructures are generally better visible, and noise suppression is effective in most regions. But at some regions, the existence of noise can still be seen. The FFT also shows stronger structures supporting the indicating the enhancement of image features. Overall, the results look good and more interpretable. 
 		
-		The results from N2V show a decently reconstructed circular structures and the noise in the black region of the image has been removed fairly well. However, the substructures have not been reconstructed well. The FFT shows enhanced structures at the center, whereas the boundary mostly looks dark representing the suppression of high frequency noise. 
-		
-		\item BM3D \cite{DBLP:journals/tip/BM3D} is one of the widely used classical denoising methods. BM3D uses collaborative filtering in the transform domain for denoising images and it is a non blind denoising method, which means that the standard deviation of the noise is required for denoising. The standard deviation was estimated with trial and error. The best results we obtained for a standard deviation of 0.06 for the normalized image.
-		
-		The results from BM3D are similar to that obtained from N2V. The denoising effect is visible but the images are still not very useful for further analysis. This is also supported by the FFT.
-		
-		\item Non Local Means (NLM) \cite{bcm_nlm} is a conventional image denoising method that finds similar patches of images within a region and averages them to suppress noise. An NLM implementation with a patch size of $48*48$, a search area of $100*100$ and a cut off distance of 0.36 was used. 
-		
-		The result shows a good level of denoising. The circular structures and sub structures between them are visible fairly well. At most regions, the the level of noise suppression is good. But at some regions, the existence of noise can still be seen. The FFT also shows stronger structures supporting the indicating the enhancement of image features. Overall, the results look good and more interpretable. 
-		
-		\item Results of our proposed denoising algorithm were obtained with a patch size of $48*48$, a group size was between 5 and 100, and the clustering parameter equal to 2.7 were used. 
-		
-		From the denoised result, it can be observed that the quality of denoising is marginally better than that from NLM. The image noise levels are suppressed fairly well and the information from the image can be well interpreted. The sub structures between the circular structures are also better visible. From the FFT too, it can be seen that the structures are more prominently visible. Some features can also be seen in the high frequency region which was previously not visible so well.
-	\end{itemize}
+	Results of our proposed denoising algorithm were obtained with a patch size of $48*48$, a group size between 5 and 100, and the clustering parameter equal to 2.7 were used. From the denoised result, it can be observed that the quality of denoising is marginally better than that from NLM. Noise suppression is the highest compared to the other methods and information in the image can be best interpreted. The sub structures between the circular structures are also better visible. From the FFT too, it can be seen that the structures are more prominently visible. Some features can also be seen in the high frequency region which was previously not visible so well.
 
 	
 	Apart from the qualitative improvement in the results, the proposed algorithm has a bigger advantage with regards to the computational time. The time complexity of the convolution operation is $O(m^2n^2)$, where $m*m$ is the size of the patch and $n*n$ is the size of the image, which is worse than the runtime of the template matching algorithm when $m$ is large. Complexity of the template matching algorithm is $O(n^2log(n^2))$ \cite{template_matching}, where $n*n$ is the image size. Since the convolution operation is widely used in convolution neural networks, there are Python libraries that support GPU computation for performing the convolution operation. Running the computations on the GPU makes the algorithm significantly faster.
 	
-	The runtime of the proposed method for the images in figure \ref{fig:comparison} was 19.4 seconds, where as NLM, which was the closest to our results had a runtime of 171.4 seconds. The optimization in the runtime is particularly helpful when denoising image stacks from Transmission Electron Microscopy. The images in the stacks are often similar. In such cases, our algorithm not only matches the templates in the current image, but also the patches from other images in the stack. This significantly improves the quality of the results and with GPU computations, the computation speed is quite fast. For reference, the denoising of an image stack with 10 images of size 1024*1024 pixels took 281.8 seconds. The computations were carried out on a computer with 128 GB of RAM, Intel Xenon processor (16 CPUs), and Nvidia RTX6000 GPU.
+	The runtime of the proposed method for the images in figure \ref{fig:comparison} was 19.4 seconds, where as NLM, which was the closest to our results qualitatively, had a runtime of 171.4 seconds. The optimization in the runtime is particularly helpful when denoising image stacks from Transmission Electron Microscopy. The images in the stacks are often similar. In such cases, our algorithm not only matches the templates in the current image, but also the patches from other images in the stack. This significantly improves the quality of the results and with GPU computations, the computation speed is quite fast. For reference, the denoising of an image stack with 10 images of size 1024*1024 pixels took 281.8 seconds. The computations were carried out on a computer with 128 GB of RAM, Intel Xenon processor (16 CPUs), and Nvidia RTX6000 GPU.
+	
+
 	
 
 	
@@ -185,9 +190,10 @@
 	\begin{figure}
 		\centering
 		\includegraphics[scale=0.5]{./imgs/comparison_sample_new.jpg}
-		\caption{Comparison of results obtained from different methods}
+		\caption{First row (from left to right) shows the simulated image (which is the ground truth), noisy image created by adding Poisson noise, and  results obtained from different methods - NLM, BM3D, N2V and our proposed method. Second row shows the corresponding zoomed in regions images for better interpretation. PSNR and SSIM values are also shown for noisy and denoised images. N2V which optimizes for a lower distortion has a higher PSNR value. However, our proposed method succeeds in restoring high frequency components of the image. This is also supported by the fact that our method has a higher SSIM value, which is a more perceptual metric.}
 		\label{fig:comparison_sample}
 	\end{figure}
+
 
 	Since obtaining a noise free image is often very difficult when it comes to microscopy, we generated a noise free image (ground truth) artificially for quantitative comparison. The generated image tries to imitate the kind of microscopy images which are best suited for our algorithm's application, i.e. images with similar patterns spread across them. A noisy image is simulated by adding Poisson noise to the generated image. Different denoising methods were applied on this noisy image and the Peak Signal to Noise Ratio (PSNR) and Structural Similarity Index Metric (SSIM) values of the denoised images have been found with respect to the ground truth. The ground truth, noisy image and the results from different methods can be seen in the figure \ref{fig:comparison_sample}. Additionally, a comparison of FFT of these images is shown in section \ref{fft_comparison}.
 	
@@ -197,16 +203,18 @@
 	
 	\subsection*{Confidence map}
 	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.7]{./imgs/confidence_map.png}
+		\caption{An image denoised by using our proposed method (left) and it's confidence map (right) can be seen the figure above. When patches are averaged, variance of the group is also found along with the average. The variance calculated is used to back-plot at the corresponding location in a weighted manner to get the confidence map. Ideally, the variance should be minimum. High variance regions show strong deviations and presence of dissimilar patches in a same group. Such high frequency regions lead to the creation of artifacts. An example of such an artifact can be identified by bright yellow regions on the confidence map.}
+		\label{fig:confidence_map}
+	\end{figure}
+	
 	In the absence of a ground truth, it is difficult to identify artifacts in the denoised results. However, it is essential to recognize these artifacts to prevent wrong deductions from the denoised images. Since it is challenging to detect minute artifacts from FFT, a confidence map is developed. This confidence map is based on the variance within each cluster obtained after applying clustering. The idea behind this approach is that the variance should be small if the centroid is a good representation of its members. Also, a good centroid should not have any patterns in its variance. Patterns in the variance show that the centroid does not generalize it's members well. 
 	
 	The confidence map of the denoised image is calculated by combining the variances\cite{chan1982updating} for different centroids as they are back plotted. The overall variance map, i.e., the confidence map of a denoised image is as shown in figure \ref{fig:confidence_map}. This result has been produced for demonstration purpose with a very few initial \textit{reference patches} selected very close to each other. The bright regions in the confidence map correspond to the denoised image artifacts. For instance, a bright region can be seen in the confidence map at the top-right position. An artifact can be found by inspecting the same region on the denoised image. Similarly, irregularities in the black region on the left side of the denoised image can be recognized by the brighter regions of the confidence map.
 	
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.7]{./imgs/confidence_map.png}
-		\caption{Comparison of results obtained from different methods}
-		\label{fig:confidence_map}
-	\end{figure}
+
 	
 	\section*{Discussion}
 	
@@ -233,7 +241,7 @@
 	\begin{figure}[H]
 		\centering
 		\includegraphics[scale=0.6]{./imgs/comparison-sample_fft.jpg}
-		\caption{Comparison of FFTs of images obtained from different methods}
+		\caption{First row (from left to right) shows the simulated image (which is the ground truth), noisy image created by adding Poisson noise, and  results obtained from different methods - NLM, BM3D, N2V and our proposed method. Corresponding FFTs can be seen in the second row. On observing the FFTs closely, we can see that the FFT from our method is the closest to that of the ground truth.}
 		\label{fig:comparison_sample_fft}
 	\end{figure}
 
