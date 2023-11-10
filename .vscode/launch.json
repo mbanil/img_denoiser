@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["--image_path","/home/akm/data/lamellae/01_Laellae_stackreg_555images.tif", "--result_folder_path","/home/akm/data/lamellae/img_denoiser/"]
+            "args": ["--image_path","/home/akm/network/dxs-nas-01/dXs_DATA/TOOLS/2021_IKTS-Tool/data/24keV_images_for_processing/Microbumps/DBI_90deg_5x120s_680um_Si.tif", "--result_folder_path","/home/akm/network/dxs-nas-01/dXs_DATA/TOOLS/2021_IKTS-Tool/data/24keV_images_for_processing/Microbumps/"]
         }
     ]
 }

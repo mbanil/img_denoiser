@@ -19,7 +19,7 @@ def run(image_path, result_folder_path, min_patches_per_class, max_patches_per_c
                                   termination_number, 
                                   analyze, 
                                   clustering_factor)
-    if(image.shape[0]==1):
+    elif(image.shape[0]==1):
         denoised_image = denoiser(image, 
                                   min_patches_per_class, 
                                   max_patches_per_class, 
@@ -28,7 +28,7 @@ def run(image_path, result_folder_path, min_patches_per_class, max_patches_per_c
                                   termination_number, 
                                   analyze, 
                                   clustering_factor)
-    if(len(image.shape)==3):
+    elif(len(image.shape)==3):
         denoised_image = np.zeros((image.shape))
         for i in range(image.shape[0]):
             denoised_image[i,:,:] = denoiser(image[i:i+1,:,:], 
