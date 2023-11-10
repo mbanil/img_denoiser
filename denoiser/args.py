@@ -4,8 +4,8 @@ def get_args():
 
     parser = argparse.ArgumentParser(description='Image denoiser')
 
-    parser.add_argument("--image_path", type=str, default="")
-    parser.add_argument("--result_folder_path", type=str, default="")
+    parser.add_argument("--image_path", type=str, default="", required=True, help="Input image path")
+    parser.add_argument("--result_folder_path", type=str, default="", required=True, help="Folder path to save the result")
     parser.add_argument("--min_patches_per_class", type=int, default=5)
     parser.add_argument("--max_patches_per_class", type=int, default=100)
     parser.add_argument("--iteration_counter", type=int, default=15)

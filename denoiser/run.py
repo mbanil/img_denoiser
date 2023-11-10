@@ -7,7 +7,7 @@ import numpy as np
 def run(image_path, result_folder_path, min_patches_per_class, max_patches_per_class, iteration_counter, patch_size, termination_number, analyze, clustering_factor):
 
     image = tifffile.imread(image_path).astype(np.float32)
-    file_name = image_path.split("/")[-1].split(".")[0]
+    file_name = image_path.split("/")[-1].split("\\")[-1].split(".")[0]
 
     if(len(image.shape)==2):
         image = image[np.newaxis,...]
@@ -40,7 +40,7 @@ def run(image_path, result_folder_path, min_patches_per_class, max_patches_per_c
                                              analyze, 
                                              clustering_factor)[0]
 
-    tifffile.imsave(result_folder_path + "denoised_" + file_name + ".tif", denoised_image)
+    tifffile.imsave(result_folder_path + "/denoised_" + file_name + ".tif", denoised_image)
 
 if __name__ == "__main__":
 
