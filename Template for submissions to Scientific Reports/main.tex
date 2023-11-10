@@ -10,7 +10,7 @@
 	convert #1 \OutputFile         
 }
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil} 
-\title{Pattern matching based denoising for images with repeated sub structures.}
+\title{Pattern matching based denoising for images with repeated sub-structures.}
 
 % Keywords command
 \providecommand{\keywords}[1]
@@ -33,7 +33,7 @@
 %\keywords{Keyword1, Keyword2, Keyword3}
 
 \begin{abstract}
-	In electron microscopy, obtaining a noise-free image is often difficult especially when examining biological samples or delicate materials. Therefore, the suppression of noise is essential for the analysis of such noisy images. State of the art image denoising methods are dominated by supervised Convolution Neural Network (CNN) based methods. However, if a noise-free ground truth is unavailable, it is not possible to use supervised CNNs. To address this problem, a denoising algorithm is proposed that uses re-occurring patterns in images. The proposed method does not require noise-free images for the denoising task. Instead, it is based on the idea that averaging images with the same signal having independent noise, suppresses the overall noise. In order to evaluate the performance of our method, our results are compared with other state of the art denoising methods that do not require a noise free image. Additionally, a confidence map is developed for evaluating the denoising quality of the proposed method. Furthermore, to ensure scalability, time complexity  of the algorithm is analyzed and optimizations are made to improve the run-time efficiency.
+	In electron microscopy, obtaining low noise images are often difficult especially when examining biological samples or delicate materials. Therefore, the suppression of noise is essential for the analysis of such noisy images. State of the art image denoising methods are dominated by supervised Convolution Neural Network (CNN) based methods. However, if a noise-free ground truth is unavailable, it is not possible to use supervised CNNs. To address this problem, a denoising algorithm is proposed that uses re-occurring patterns in images. The proposed method does not require noise-free images for the denoising task. Instead, it is based on the idea that averaging images with the same signal having independent noise, suppresses the overall noise. In order to evaluate the performance of our method, our results are compared with other state of the art denoising methods that do not require a noise free image. Additionally, a confidence map is developed for evaluating the denoising quality of the proposed method. Furthermore, to ensure scalability, time complexity  of the algorithm is analyzed and optimizations are made to improve the run-time efficiency.
 \end{abstract}
 
 
@@ -54,11 +54,11 @@
 	
 	\section*{Introduction}
 	
-	Transmission Electron Microscopy (TEM) imaging is essential in solving numerous scientific questions in life and material sciences \cite{CURRY200691}$^{,}$\cite{WANG2008395}. However, noise in the acquired images corrupt the signal beyond a useful level. This noise can appear due to various reasons like data transmission errors, properties of the imaging systems, environmental conditions like humidity, temperature, etc. Thus, image denoising plays a vital role especially in suppressing microscopy image noise.
+	Transmission Electron Microscopy (TEM) imaging is essential in solving numerous scientific questions in life and material sciences \cite{CURRY200691}$^{,}$\cite{WANG2008395}. However, noise in the acquired images can obscure the signal. This noise can appear due to various reasons like data transmission errors and properties of the imaging systems. However, some noise will always be present due to the stochastic nature of the imaging process. Thus, image denoising plays a vital role especially in high resolution microscopy.
 	
-	The contrast in TEM imaging is based on the interaction of a multi keV electron beam with the specimen. While the optical resolution for modern TEM system can be below one angstrom, the high energy electrons often lead to a fast degradation of the sample. For such samples only few electrons can be used for imaging. This leads to a degradation of the image's effective resolution, thus making the image hard to interpret. Therefore, after image acquisition, numerical processing is required to enhance the image quality.
+	The contrast in TEM imaging is based on the interaction of a multi keV electron beam with the specimen. While the optical resolution for modern TEM system can be below one angstrom, however the high energy electrons required for imaging can lead to a fast degradation of the sample. For sensitive samples, only few electrons can be used for imaging. This leads to noisy images, thus making the image hard to interpret. Therefore, after image acquisition, numerical processing is essential to enhance the visibility of object structures in the image.
 	
-	In order to get the best image quality with minimum dose, various image denoising algorithms were proposed in the past. Conventional denoising methods like Non-Local Means\cite{bcm_nlm}$^{,}$, BM3D\cite{DBLP:journals/tip/BM3D}, etc. mostly use a statistical approach for the denoising task, whereas most modern methods involving a deep neural network\cite{zhang2018ffdnet}$^{,}$ \cite{zhang2017beyond}, require ground truth data for training. Since in most cases clean electron microscopy images are not available, modern denoising methods that require clean images as ground truths cannot be used. However, there are also some deep neural network based methods that use noisy supervision\cite{DBLP:journals/corr/abs-1803-04189} and self supervision\cite{krull2019noise2void} . Although these existing methods can denoise images, they improved the denoising quality only by a relatively small margin for images with repeated patterns. To address this issue and fill this research gap, a new denoising algorithm which effectively denoises TEM images with repeated patterns is proposed. In  our method, we also show that the fine structures in TEM images can be restored most effectively while maintaining image sharpness. In the following sections, the proposed method is explained in detail, results are analyzed and compared with the state-of-the-art methods showing significant gain in image quality. 
+	In order to get the best image quality with minimum dose, various image denoising algorithms were developed in the past. Conventional denoising methods like Non-Local Means\cite{bcm_nlm}$^{,}$, BM3D\cite{DBLP:journals/tip/BM3D}, etc. mostly use a statistical approach for the denoising task, whereas most modern methods involving a deep neural network\cite{zhang2018ffdnet}$^{,}$ \cite{zhang2017beyond} would require ground truth data for training. Since in most cases, very low noise electron microscopy images are not available, modern denoising methods that require clean images as ground truths cannot be used. However, there are also some deep neural network based methods that use noisy supervision\cite{DBLP:journals/corr/abs-1803-04189} and self supervision\cite{krull2019noise2void} . Although these existing methods can denoise images, they improved the denoising quality only by a relatively small margin for images with repeated patterns. To address this issue and fill this research gap, a new denoising algorithm which effectively denoises TEM images with repeated patterns is proposed. In  our method, we also show that the fine structures in TEM images can be restored most effectively while maintaining image sharpness. In the following sections, the proposed method is explained in detail, results are analyzed and compared with the state-of-the-art methods showing significant gain in image quality. 
 	
 	
 	\section*{Method}
@@ -71,17 +71,17 @@
 	\end{equation}
 	Averaging over $k$ patches results in an expected value,
 	\begin{equation}
-		E[\frac{1}{k}\sum_{i}^{k}x_i ] = E[\frac{1}{k}\sum_{i}^{k}(s_i + n_i) ]
+		E\left[\frac{1}{k}\sum_{i}^{k}x_i \right] = E\left[\frac{1}{k}\sum_{i}^{k}(s_i + n_i) \right]
 	\end{equation}
 	Since the noise is expected to have zero mean and the base signal is expected to be the same, this ideally means that,
 	\begin{equation}
-		E[\frac{1}{k}\sum_{i}^{k}x_i ] = s
+		E\left[\frac{1}{k}\sum_{i}^{k}x_i \right] = s
 	\end{equation}
 	In addition, variance is 
 	\begin{equation}
-		Var[\frac{1}{k}\sum_{i}^{k}x_i ] = \frac{1}{k^2 -1} \sum_{i}^{k}Var(n_i)
+		Var\left[\frac{1}{k}\sum_{i}^{k}x_i \right] = \frac{1}{k^2 -1} \sum_{i}^{k}Var\left[n_i\right]
 	\end{equation}
-	since $Var(s_i) = 0$ for all $i$. Hence averaging patches with the same signal suppresses noise.
+	since $Var[s_i] = 0$ for all $i$. Hence averaging patches with the same signal suppresses noise.
 	
 
 	
@@ -94,7 +94,7 @@
 	\begin{figure}[H]
 		\centering
 		\includegraphics[scale=0.7]{./imgs/flowchart.png}
-		\caption{ The proposed algorithm is depicted in this flowchart. It begins by randomly selecting patches from the noisy input image, which serve as templates for subsequent pattern matching. In the `classify' section, an iterative pattern matching process is employed to group similar patches together, with further splitting the group based on it's size and averaging the group members to reduce noise. Despite this noise reduction, artifacts may persist when group has a large variance, which is why the algorithm includes a 'cluster' section to refine the groups formed. This step prioritizes grouping the most similar patches, resulting in a seamless, artifact-free image. It's worth noting that the algorithm strategically incorporates pattern matching before clustering to minimize computational overhead, ensuring an efficient denoising process.}
+		\caption{ The proposed algorithm is depicted in this flowchart. It begins by randomly selecting patches from the noisy input image, which serve as templates for subsequent pattern matching. In the `classify' section, an iterative pattern matching process is employed to group similar patches together, with further splitting the group based on it's size and averaging the group members to reduce noise. Despite this noise reduction, artifacts may persist when group has a large variance, which is why the algorithm includes a `cluster' section to refine the groups formed. This step prioritizes grouping the most similar patches, resulting in a seamless, artifact-free image. It's worth noting that the algorithm strategically incorporates pattern matching before clustering to minimize computational overhead, ensuring an efficient denoising process.}
 		\label{fig:flowchart}
 	\end{figure} 
 	
@@ -131,14 +131,14 @@
 
 	\begin{figure}
 		\centering
-		\includegraphics[scale=0.75]{./imgs/initial_reference_patches.png}
+		\includegraphics[scale=0.85]{./imgs/initial_reference_patches.png}
 		\caption{Example set of initial \textit{reference patches} (of size $48*48$ pixels), taken from different regions of the input image. These are the first set of patches that are used as templates for pattern matching in the proposed algorithm. These raw image patches show little to no structure and the noise in these patches is dominant. }
 		\label{fig:initial_reference_patches}
 	\end{figure} 
 	
 	\begin{figure}
 		\centering
-		\includegraphics[scale=0.8]{./imgs/final_reference_patches.png}
+		\includegraphics[scale=1.2]{./imgs/final_reference_patches.png}
 		\caption{Example subset of the final \textit{reference patches} (of size $48*48$). These are also the patches obtained after the `classify' section of the flowchart shown in figure \ref{fig:flowchart}. The noise suppression in these images is already evident on comparing these images with the initial \textit{reference patches} in figure \ref{fig:initial_reference_patches}.}
 		\label{fig:final_reference_patches}
 	\end{figure} 
@@ -164,15 +164,15 @@
 		
 	BM3D \cite{DBLP:journals/tip/BM3D} is one of the widely used classical denoising methods. BM3D uses collaborative filtering in the transform domain for denoising images and it is a non blind denoising method, which means that the standard deviation of the noise is required for denoising. The standard deviation was estimated with trial and error. The best results we obtained for a standard deviation of 0.06 for the normalized image. The results from BM3D are similar to that obtained from N2V. The denoising effect is visible but the images are still not very useful for further analysis. This is also supported by the FFT.
 	
-	\begin{figure}
+		
+	Non Local Means (NLM) \cite{bcm_nlm} is a conventional image denoising method that finds similar patches of images within a region and averages them to suppress noise. An NLM implementation with a patch size of $48*48$, a search area of $100*100$ and a cut off distance of 0.36 was used. The result shows a good level of denoising. Circular structures and their subsequent substructures are generally better visible, and noise suppression is effective in most regions. But at some regions, the existence of noise can still be seen. The FFT also shows stronger structures supporting the indicating the enhancement of image features. Overall, the results look good and more interpretable. 
+	
+	\begin{figure}[H]
 		\centering
-		\includegraphics[scale=0.54]{./imgs/comparison-new.jpg}
+		\includegraphics[scale=0.4]{./imgs/comparison-zoomed.jpg}
 		\caption{First row (from left to right) shows the noisy image, and results obtained from different methods - N2V, BM3D, NLM and our proposed method. Corresponding FFTs can be seen in the second row. In the first row, insets show a zoomed-in region of the image. These insets are taken from the same location in all images and help in interpreting the denoised results better. It should be noted that, even though NLM is qualitatively close to our method, computationally it is significantly slower. }
 		\label{fig:comparison}
 	\end{figure}
-	
-		
-	Non Local Means (NLM) \cite{bcm_nlm} is a conventional image denoising method that finds similar patches of images within a region and averages them to suppress noise. An NLM implementation with a patch size of $48*48$, a search area of $100*100$ and a cut off distance of 0.36 was used. The result shows a good level of denoising. Circular structures and their subsequent substructures are generally better visible, and noise suppression is effective in most regions. But at some regions, the existence of noise can still be seen. The FFT also shows stronger structures supporting the indicating the enhancement of image features. Overall, the results look good and more interpretable. 
 		
 	Results of our proposed denoising algorithm were obtained with a patch size of $48*48$, a group size between 5 and 100, and the clustering parameter equal to 2.7 were used. From the denoised result, it can be observed that the quality of denoising is marginally better than that from NLM. Noise suppression is the highest compared to the other methods and information in the image can be best interpreted. The sub structures between the circular structures are also better visible. From the FFT too, it can be seen that the structures are more prominently visible. Some features can also be seen in the high frequency region which was previously not visible so well.
 
@@ -189,13 +189,13 @@
 	
 	\begin{figure}
 		\centering
-		\includegraphics[scale=0.5]{./imgs/comparison_sample_new.jpg}
+		\includegraphics[scale=0.5]{./imgs/comparison_sample_new_zoomed.jpg}
 		\caption{First row (from left to right) shows the simulated image (which is the ground truth), noisy image created by adding Poisson noise, and  results obtained from different methods - NLM, BM3D, N2V and our proposed method. Second row shows the corresponding zoomed in regions images for better interpretation. PSNR and SSIM values are also shown for noisy and denoised images. N2V which optimizes for a lower distortion has a higher PSNR value. However, our proposed method succeeds in restoring high frequency components of the image. This is also supported by the fact that our method has a higher SSIM value, which is a more perceptual metric.}
 		\label{fig:comparison_sample}
 	\end{figure}
 
 
-	Since obtaining a noise free image is often very difficult when it comes to microscopy, we generated a noise free image (ground truth) artificially for quantitative comparison. The generated image tries to imitate the kind of microscopy images which are best suited for our algorithm's application, i.e. images with similar patterns spread across them. A noisy image is simulated by adding Poisson noise to the generated image. Different denoising methods were applied on this noisy image and the Peak Signal to Noise Ratio (PSNR) and Structural Similarity Index Metric (SSIM) values of the denoised images have been found with respect to the ground truth. The ground truth, noisy image and the results from different methods can be seen in the figure \ref{fig:comparison_sample}. Additionally, a comparison of FFT of these images is shown in section \ref{fft_comparison}.
+	Since obtaining low noise images are often very difficult in microscopy, we generated a noise free image (ground truth) artificially for quantitative comparison. The generated image tries to imitate the kind of microscopy images which are best suited for our algorithm's application, i.e. images with similar patterns spread across them. A noisy image is simulated by adding Poisson noise to the generated image. Different denoising methods were applied on this noisy image and the Peak Signal to Noise Ratio (PSNR) and Structural Similarity Index Metric (SSIM) values of the denoised images have been found with respect to the ground truth. The ground truth, noisy image and the results from different methods can be seen in the figure \ref{fig:comparison_sample}. Additionally, a comparison of FFT of these images is shown in section \ref{fft_comparison}.
 	
 	The results from Non-Local Means show minimum improvement. The reason is, this method requires similar image patches that are present close to each other, which is not always the case in the generated image. BM3D processes the image in the Fourier domain and hence suppressing the high frequency components. This results in the sharp features of the image being less prominent. N2V does a better denoising job which is reflected in it's PSNR value. However, on close inspection it can be observed that the high frequency components appear slightly blurred. This is where our method out performs the others. The pattern matching used to find similar pattern across the image ensures the correctness while preserving the sharpness of the image. This is also reflected in a higher SSIM value.
 	
@@ -203,7 +203,7 @@
 	
 	\subsection*{Confidence map}
 	
-	\begin{figure}[H]
+	\begin{figure}
 		\centering
 		\includegraphics[scale=0.7]{./imgs/confidence_map.png}
 		\caption{An image denoised by using our proposed method (left) and it's confidence map (right) can be seen the figure above. When patches are averaged, variance of the group is also found along with the average. The variance calculated is used to back-plot at the corresponding location in a weighted manner to get the confidence map. Ideally, the variance should be minimum. High variance regions show strong deviations and presence of dissimilar patches in a same group. Such high frequency regions lead to the creation of artifacts. An example of such an artifact can be identified by bright yellow regions on the confidence map.}
