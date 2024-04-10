@@ -1,14 +1,11 @@
-This is BibTeX, Version 0.99d
+This is BibTeX, Version 0.99d (TeX Live 2022)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
-Reallocating 'name_of_file' (item size: 1) to 14 items.
 The style file: naturemag-doi.bst
-Reallocating 'name_of_file' (item size: 1) to 7 items.
 Database file #1: sample.bib
-Warning--I didn't find a database entry for "Hao:gidmaps:2014"
 You've used 12 entries,
             2380 wiz_defined-function locations,
-            1086 strings with 11777 characters,
+            1084 strings with 11745 characters,
 and the built_in function-call counts, 5318 in all, are:
 = -- 384
 > -- 132
@@ -47,4 +44,3 @@ warning$ -- 0
 while$ -- 32
 width$ -- 14
 write$ -- 145
-(There was 1 warning)

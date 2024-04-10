@@ -1,13 +1,16 @@
 \relax 
+\providecommand\hyper@newdestlabel[2]{}
 \providecommand\babel@aux[2]{}
 \@nameuse{bbl@beforestart}
-\providecommand\hyper@newdestlabel[2]{}
 \providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
 \HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
 \global\let\oldnewlabel\newlabel
 \gdef\newlabel#1#2{\newlabelxx{#1}#2}
 \gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
 \AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
 \let\newlabel\oldnewlabel
 \fi}
 \fi}
@@ -31,12 +34,12 @@
 \citation{alake_understanding_2021}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Example set of initial \textit  {reference patches} (of size $48*48$ pixels), taken from different regions of the input image. These are the first set of patches that are used as templates for pattern matching in the proposed algorithm. These raw image patches show little to no structure and the noise in these patches is dominant. \relax }}{3}{figure.caption.2}\protected@file@percent }
 \newlabel{fig:initial_reference_patches}{{2}{3}{Example set of initial \textit {reference patches} (of size $48*48$ pixels), taken from different regions of the input image. These are the first set of patches that are used as templates for pattern matching in the proposed algorithm. These raw image patches show little to no structure and the noise in these patches is dominant. \relax }{figure.caption.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Example subset of the final \textit  {reference patches} (of size $48*48$). These are also the patches obtained after the `classify' section of the flowchart shown in figure \ref  {fig:flowchart}. The noise suppression in these images is already evident on comparing these images with the initial \textit  {reference patches} in figure \ref  {fig:initial_reference_patches}.\relax }}{3}{figure.caption.3}\protected@file@percent }
+\newlabel{fig:final_reference_patches}{{3}{3}{Example subset of the final \textit {reference patches} (of size $48*48$). These are also the patches obtained after the `classify' section of the flowchart shown in figure \ref {fig:flowchart}. The noise suppression in these images is already evident on comparing these images with the initial \textit {reference patches} in figure \ref {fig:initial_reference_patches}.\relax }{figure.caption.3}{}}
 \citation{bcm_nlm}
 \citation{krull2019noise2void}
 \citation{DBLP:journals/tip/BM3D}
 \citation{bcm_nlm}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Example subset of the final \textit  {reference patches} (of size $48*48$). These are also the patches obtained after the `classify' section of the flowchart shown in figure \ref {fig:flowchart}. The noise suppression in these images is already evident on comparing these images with the initial \textit  {reference patches} in figure \ref {fig:initial_reference_patches}.\relax }}{4}{figure.caption.3}\protected@file@percent }
-\newlabel{fig:final_reference_patches}{{3}{4}{Example subset of the final \textit {reference patches} (of size $48*48$). These are also the patches obtained after the `classify' section of the flowchart shown in figure \ref {fig:flowchart}. The noise suppression in these images is already evident on comparing these images with the initial \textit {reference patches} in figure \ref {fig:initial_reference_patches}.\relax }{figure.caption.3}{}}
 \citation{template_matching}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces First row (from left to right) shows the noisy image, and results obtained from different methods - N2V, BM3D, NLM and our proposed method. Corresponding FFTs can be seen in the second row. In the first row, insets show a zoomed-in region of the image. These insets are taken from the same location in all images and help in interpreting the denoised results better. It should be noted that, even though NLM is qualitatively close to our method, computationally it is significantly slower. \relax }}{5}{figure.caption.4}\protected@file@percent }
 \newlabel{fig:comparison}{{4}{5}{First row (from left to right) shows the noisy image, and results obtained from different methods - N2V, BM3D, NLM and our proposed method. Corresponding FFTs can be seen in the second row. In the first row, insets show a zoomed-in region of the image. These insets are taken from the same location in all images and help in interpreting the denoised results better. It should be noted that, even though NLM is qualitatively close to our method, computationally it is significantly slower. \relax }{figure.caption.4}{}}
@@ -53,12 +56,12 @@
 \bibcite{zhang2018ffdnet}{5}
 \bibcite{zhang2017beyond}{6}
 \bibcite{DBLP:journals/corr/abs-1803-04189}{7}
-\bibcite{krull2019noise2void}{8}
-\bibcite{alake_understanding_2021}{9}
-\bibcite{template_matching}{10}
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces An image denoised by using our proposed method (left) and it's confidence map (right) can be seen the figure above. When patches are averaged, variance of the group is also found along with the average. The variance calculated is used to back-plot at the corresponding location in a weighted manner to get the confidence map. Ideally, the variance should be minimum. High variance regions show strong deviations and presence of dissimilar patches in a same group. Such high frequency regions lead to the creation of artifacts. An example of such an artifact can be identified by bright yellow regions on the confidence map.\relax }}{7}{figure.caption.6}\protected@file@percent }
 \newlabel{fig:confidence_map}{{6}{7}{An image denoised by using our proposed method (left) and it's confidence map (right) can be seen the figure above. When patches are averaged, variance of the group is also found along with the average. The variance calculated is used to back-plot at the corresponding location in a weighted manner to get the confidence map. Ideally, the variance should be minimum. High variance regions show strong deviations and presence of dissimilar patches in a same group. Such high frequency regions lead to the creation of artifacts. An example of such an artifact can be identified by bright yellow regions on the confidence map.\relax }{figure.caption.6}{}}
 \@writefile{toc}{\contentsline {section}{\hspace  *{-\tocsep }References}{7}{figure.caption.6}\protected@file@percent }
+\bibcite{krull2019noise2void}{8}
+\bibcite{alake_understanding_2021}{9}
+\bibcite{template_matching}{10}
 \bibcite{8578750}{11}
 \bibcite{chan1982updating}{12}
 \newlabel{fft_comparison}{{}{8}{}{figure.caption.6}{}}

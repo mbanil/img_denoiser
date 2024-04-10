@@ -19,16 +19,18 @@
 	\textbf{\textit{Keywords---}} #1
 }
 
-\author[1,*]{Alice Author}
-\author[2]{Bob Author}
-\author[1,2,+]{Christine Author}
-\author[2,+]{Derek Author}
-\affil[1]{Affiliation, department, city, postcode, country}
-\affil[2]{Affiliation, department, city, postcode, country}
+\author[1,*]{Anil Kumar Mysore Badarinarayana}
+\author[1]{Christoph Pratsch}
+\author[2]{Thomas Lunkenbein}
+\author[3]{Florian Jug}
+\affil[1]{Hemholtz-Zentrum Berlin, X-ray microscopy, Berlin, 12489, Germany}
+\affil[2]{Fritz Haber Institute, Department of Inorganic Chemistry, Berlin, 14195, Germany}
+\affil[3]{Fondazione Human Technopole, Computational Biology, Milan, 20157, Italy}
 
-\affil[*]{corresponding.author@email.example}
 
-\affil[+]{these authors contributed equally to this work}
+\affil[*]{anil.mysore\_badarinarayana@helmholtz-berlin.de}
+
+%\affil[+]{these authors contributed equally to this work}
 
 %\keywords{Keyword1, Keyword2, Keyword3}
 
@@ -115,9 +117,9 @@
 	
 	%\footnotetext{\url{https://scikit-image.org/docs/dev/auto_examples/features_detection/plot_template.html}}
 	
+	
 
-	
-	
+
 	The algorithm begins with the initialization of random patches of size $m*m$, which are used for matching other patches of the same size in the image. The patches that are used as templates for matching are referred to as \textit{reference patches}. One example for the initial choice of \textit{reference patches} can be seen in figure \ref{fig:initial_reference_patches}. 
 	
 	
@@ -127,21 +129,24 @@
 	
 	In the `classify' section shown in figure \ref{fig:flowchart}, the patches at every position in the image are classified into different groups based on their similarity to the \textit{reference patch} using cosine similarity. When cosine similarity is applied, each patch of size $m*m$ in the image is compared with all the \textit{reference patches}. Local maxima is found from each cosine similarity result, which corresponds to the best fitting positions for that particular \textit{reference patch}. These resulting arrays from different \textit{reference patches} are stacked together and the maxima along the new dimension corresponds to the best fitting \textit{reference patch} for different locations of the image. Now, that the patches in the image which are most similar to the \textit{reference patches} are identified, they can be grouped together.
 	
-	Some of these groups formed can sometimes have large number of patches in the same group, while others may contain very few unique patches. Groups with few members contribute hardly to any denoising, while overly large groups might lead to a loss of detail. Hence, the groups formed are deleted or split into finer groups based on the group size. Finally for each new group, the old \textit{reference patch} is replaced by the average of all the members in that group. In the next iteration, cosine similarity and the classification steps repeat with these new \textit{reference patches}. When the classification becomes stable, there are no new groups formed. This is when the iteration loop is broken. Figure \ref{fig:final_reference_patches} shows the \textit{reference patches} generated after 15 iterations. On comparing figure \ref{fig:initial_reference_patches} and figure \ref{fig:final_reference_patches}, one can observe that the noise in the final \textit{reference patches} has been significantly suppressed.
-
-	\begin{figure}
+	\vspace{1cm }
+	
+	\begin{figure}[H]
 		\centering
 		\includegraphics[scale=0.85]{./imgs/initial_reference_patches.png}
 		\caption{Example set of initial \textit{reference patches} (of size $48*48$ pixels), taken from different regions of the input image. These are the first set of patches that are used as templates for pattern matching in the proposed algorithm. These raw image patches show little to no structure and the noise in these patches is dominant. }
 		\label{fig:initial_reference_patches}
 	\end{figure} 
 	
-	\begin{figure}
+	\begin{figure}[H]
 		\centering
 		\includegraphics[scale=1.2]{./imgs/final_reference_patches.png}
 		\caption{Example subset of the final \textit{reference patches} (of size $48*48$). These are also the patches obtained after the `classify' section of the flowchart shown in figure \ref{fig:flowchart}. The noise suppression in these images is already evident on comparing these images with the initial \textit{reference patches} in figure \ref{fig:initial_reference_patches}.}
 		\label{fig:final_reference_patches}
 	\end{figure} 
+	
+	Some of these groups formed can sometimes have large number of patches in the same group, while others may contain very few unique patches. Groups with few members contribute hardly to any denoising, while overly large groups might lead to a loss of detail. Hence, the groups formed are deleted or split into finer groups based on the group size. Finally for each new group, the old \textit{reference patch} is replaced by the average of all the members in that group. In the next iteration, cosine similarity and the classification steps repeat with these new \textit{reference patches}. When the classification becomes stable, there are no new groups formed. This is when the iteration loop is broken. Figure \ref{fig:final_reference_patches} shows the \textit{reference patches} generated after 15 iterations. On comparing figure \ref{fig:initial_reference_patches} and figure \ref{fig:final_reference_patches}, one can observe that the noise in the final \textit{reference patches} has been significantly suppressed.
+
 
 	
 	If the final \textit{reference patches} are directly used for back plotting (i.e. to replace the patches in their corresponding groups), there would be still some artifacts present. This could be because, sometimes image patches that are not similar to any of the \textit{reference patches} end up falling into the best available group, even though the group might not be their best representation. This is required since the entire region of the image has to be covered. When outliers are included during averaging, the mean deviates from the median signal value. Additionally, the unique features present as outliers will be lost in the averaging process, both of which are undesirable. Another reason for artifacts is that, cosine similarity is only sensitive to the structure for any two patches and ignores the offset (i.e. brightness). Therefore, back plotting might not recover local brightness variations.
@@ -187,7 +192,7 @@
 	
 	\subsection*{Comparison with sample images}
 	
-	\begin{figure}
+	\begin{figure}[H]
 		\centering
 		\includegraphics[scale=0.5]{./imgs/comparison_sample_new_zoomed.jpg}
 		\caption{First row (from left to right) shows the simulated image (which is the ground truth), noisy image created by adding Poisson noise, and  results obtained from different methods - NLM, BM3D, N2V and our proposed method. Second row shows the corresponding zoomed in regions images for better interpretation. PSNR and SSIM values are also shown for noisy and denoised images. N2V which optimizes for a lower distortion has a higher PSNR value. However, our proposed method succeeds in restoring high frequency components of the image. This is also supported by the fact that our method has a higher SSIM value, which is a more perceptual metric.}
@@ -224,14 +229,13 @@
 	
 	\bibliography{sample}
 
-	\section*{Acknowledgements (not compulsory)}
+	%\section*{Acknowledgements (not compulsory)}
 	
-	Acknowledgements should be brief, and should not include thanks to anonymous referees and editors, or effusive comments. Grant or contribution numbers may be acknowledged.
+	%Acknowledgements should be brief, and should not include thanks to anonymous referees and editors, or effusive comments. Grant or contribution numbers may be acknowledged.
 	
 	\section*{Author contributions statement}
 	
-	Must include all authors, identified by initials, for example:
-	A.A. conceived the experiment(s),  A.A. and B.A. conducted the experiment(s), C.A. and D.A. analysed the results.  All authors reviewed the manuscript. 
+	A.K.M.B implemented and optimized the algorithm, C.P conceptualized the idea, the experimental images were taken by T. L, and F.J reviewed the work technically by providing feedback whenever required.  All authors reviewed the manuscript. 
 	
 	\section*{Additional information}
 	
