@@ -104,7 +104,7 @@
 	
 	Cosine similarity  measures similarities between two vectors\cite{alake_understanding_2021} by finding the cosine angle between them. If the vectors are in the same direction (i.e., similar), cosine similarity is maximum. It is mathematically represented as,
 	\begin{equation}
-		similarity = cos(\theta) = \frac{A\cdot B}{\|A\|\|B\|} = \frac{\sum_{i=1}^{n}A_i B_i}{\sqrt{\sum_{i=1}^{n}A_i^2}\sqrt{\sum_{i=1}^{n}B_i^2}}
+		sim(A,B) = cos(\theta) = \frac{A\cdot B}{\|A\|\|B\|} = \frac{\sum_{i=1}^{n}A_i B_i}{\sqrt{\sum_{i=1}^{n}A_i^2}\sqrt{\sum_{i=1}^{n}B_i^2}}
 	\end{equation}
 	where $A$ and $B$ are two vectors, and $\theta$ is the angle between them. Cosine similarity between a template and different patches of an image results in an array whose values lie between -1 and 1. Values close to the maximum represent the patches similar to the template.  Hence, cosine similarity can be used to match two image patches by considering them as vectors.
 	
