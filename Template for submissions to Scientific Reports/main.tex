@@ -174,7 +174,7 @@ In electron microscopy, obtaining low noise images is often difficult especially
 		
 	Non Local Means (NLM) \cite{bcm_nlm} is a conventional image denoising method that finds similar patches of images within a region and averages them to suppress noise. An NLM implementation with a patch size of $48*48$, a search area of $100*100$ and a cut off distance of 0.36 was used. The result shows a good level of denoising. Circular structures and their subsequent substructures are generally better visible, and noise suppression is effective in most regions. But at some regions, the existence of noise can still be seen. The FFT also shows stronger structures supporting our conclusion of image feature enhancement. Overall, the results look good and more interpretable. 
 	
-	\begin{figure}[H]
+	\begin{figure}
 		\centering
 		\includegraphics[scale=0.4]{./imgs/comparison-zoomed.jpg}
 		\caption{First row (from left to right) shows the noisy image, and results obtained from different methods - N2V, BM3D, NLM and our proposed method. Corresponding FFTs can be seen in the second row. In the first row, insets show a zoomed-in region of the image. These insets are taken from the same location in all images and help in interpreting the denoised results better. It should be noted that, even though NLM is qualitatively close to our method, computationally it is significantly slower. }
