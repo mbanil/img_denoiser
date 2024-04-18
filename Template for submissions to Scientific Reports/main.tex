@@ -35,7 +35,9 @@
 %\keywords{Keyword1, Keyword2, Keyword3}
 
 \begin{abstract}
-	In electron microscopy, obtaining low noise images is often difficult especially when examining biological samples or delicate materials. Therefore, the suppression of noise is essential for the analysis of such noisy images. State of the art image denoising methods are dominated by supervised Convolution Neural Network (CNN) based methods. However, supervised CNNs cannot be used if a noise-free ground truth is unavailable. To address this problem, we propose a method that uses re-occurring patterns in images. Our proposed method does not require noise-free images for the denoising task. Instead, it is based on the idea that averaging images with the same signal having independent noise, suppresses the overall noise. In order to evaluate the performance of our method, we compare our results with other state of the art denoising methods that do not require a noise free image. Additionally, we develop a confidence map for evaluating the denoising quality of the proposed method. Furthermore, we analyze the time complexity of the algorithm to ensure scalability, and optimize the algorithm to improve the run-time efficiency.
+	
+In electron microscopy, obtaining low noise images is often difficult especially when examining biological samples or delicate materials. Therefore, the suppression of noise is essential for the analysis of such noisy images. State of the art image denoising methods are dominated by supervised Convolution Neural Network (CNN) based methods. However, supervised CNNs cannot be used if a noise-free ground truth is unavailable. To address this problem, we propose a method that uses re-occurring patterns in images. Our proposed method does not require noise-free images for the denoising task. Instead, it is based on the idea that averaging images with the same signal having independent noise, suppresses the overall noise significantly while retaining the sharp features of the original image.  In order to evaluate the performance of our method, we compare our results with other state of the art denoising methods that do not require a noise free image. Additionally, we develop a confidence map for evaluating the denoising quality of the proposed method. Furthermore, we analyze the time complexity of the algorithm to ensure scalability, and optimize the algorithm to improve the run-time efficiency.
+	
 \end{abstract}
 
 
@@ -95,7 +97,7 @@
 	
 	\begin{figure}[H]
 		\centering
-		\includegraphics[scale=0.7]{./imgs/flowchart.png}
+		\includegraphics[scale=0.6]{./imgs/flowchart.png}
 		\caption{ The proposed algorithm is depicted in this flowchart. It begins by randomly selecting patches from the noisy input image, which serve as templates for subsequent pattern matching. In the `classify' section, an iterative pattern-matching process is employed to group similar patches together, with further splitting of the group based on it's size and averaging of the group members to reduce noise. Despite this noise reduction, artifacts may persist when the group has a large variance, which is why the algorithm includes a `cluster' section to refine the groups formed. This step prioritizes grouping of the most similar patches, resulting in a seamless, artifact-free image. It is worth noting that the algorithm strategically incorporates pattern matching before clustering to minimize computational overhead, ensuring an efficient denoising process.}
 		\label{fig:flowchart}
 	\end{figure} 
