@@ -10,7 +10,7 @@
 	convert #1 \OutputFile         
 }
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil} 
-\title{Pattern matching based denoising for images with repeated sub-structures.}
+\title{Pattern matching based denoising for images with repeated sub-structures}
 
 % Keywords command
 \providecommand{\keywords}[1]
@@ -155,7 +155,7 @@ In electron microscopy, obtaining low noise images is often difficult especially
 	
 	These problems can be solved by averaging over a small group with very closely matched patches. To achieve this, clustering is applied within every group (represented by the final \textit{reference patch}) to create smaller subgroups. The number of clusters in a group can be adjusted by a user set parameter. In other words, the target signal-to-noise ratio can be adjusted by changing this parameter value. While previously the whole group was represented by a single \textit{reference patch}, it is now represented by centroids of the subgroups after clustering. Centroids are back-plotted with a $2D$ Gaussian weighted average. These Gaussian weights smooth the edges of the centroids, thus preventing artifacts in the reconstructed image. 
 	
-	A pseudo implementation of the algorithm is shown in the additional information section. The implementation of the denoising algorithm can be found on github (\url{https://github.com/mbanil/img-denoiser}).
+	A pseudo implementation of the algorithm is shown in the additional information section. The implementation of the denoising algorithm can be found on github (\url{https://github.com/mbanil/img_denoiser/}).
 	
 	\subsection*{Parameters of the algorithm and stability}
 	
@@ -230,6 +230,10 @@ In electron microscopy, obtaining low noise images is often difficult especially
 	Denoising of the experimental images obtained from electron microscopy was performed by using popular denoising methods - N2V, BM3D and NLM. Even though these methods successfully suppressed noise, they enhanced fine image features only by a small margin. To address this problem, a new denoising algorithm was developed which makes use of similar patterns present in images and averages them to suppress noise. This new method successfully denoises images and also enhances fine structures. The results of all the denoising methods are compared using FFT. Additionally, a confidence map is developed to evaluate the denoising results when ground truth data is absent. Quantitative comparison of the denoising results is done using an artificially generated image. The quantitative comparison demonstrates the ability of our proposed method to preserve high frequency components in images.  
 	
 	The time complexity of the algorithm was analyzed. Optimizations were made to enhance the computation speed by introducing cosine similarity instead of template matching. This helped in enhancing the run-time efficiency by a significant factor, which ensures scalability. Our proposed method should be especially useful for the investigation of semi-crystalline materials that contain light elements, which are hardly visible in TEM images.  
+	
+	\section*{Data availability}
+	
+	The code and the results of the proposed method is available on github (\url{https://github.com/mbanil/img_denoiser/}).
 	
 	\bibliography{sample}
 
